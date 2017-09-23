@@ -21,9 +21,15 @@
   id<UISearchBarDelegate> delegate;
 }
 
+<<<<<<< HEAD
 - (void)setDelegate:(id<UISearchBarDelegate>)delegate;
 - (UISearchBar *)searchBar;
 - (void)setSearchBar:(UISearchBar *)searchBar;
+=======
+-(void)setDelegate:(id<UISearchBarDelegate>)delegate;
+-(UISearchBar*)searchBar;
+-(void)setSearchBar:(UISearchBar *)searchBar;
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 
 @end
 

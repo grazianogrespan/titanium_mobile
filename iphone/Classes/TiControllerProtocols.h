@@ -34,6 +34,7 @@
 - (UIStatusBarStyle)preferredStatusBarStyle;
 @property (nonatomic, readwrite, assign) BOOL isManaged;
 //Containing controller will call these callbacks(appearance/rotation) on contained windows when it receives them.
+<<<<<<< HEAD
 - (void)viewWillAppear:(BOOL)animated;
 - (void)viewWillDisappear:(BOOL)animated;
 - (void)viewDidAppear:(BOOL)animated;
@@ -43,6 +44,17 @@
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator;
 - (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(id<UIContentContainer>)container;
 - (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator;
+=======
+-(void)viewWillAppear:(BOOL)animated;
+-(void)viewWillDisappear:(BOOL)animated;
+-(void)viewDidAppear:(BOOL)animated;
+-(void)viewDidDisappear:(BOOL)animated;
+
+- (void)preferredContentSizeDidChangeForChildContentContainer:(id <UIContentContainer>)container;
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator;
+- (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(id <UIContentContainer>)container;
+- (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator;
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 
 //Focus callbacks from containing or hosting controller
 - (void)gainFocus;

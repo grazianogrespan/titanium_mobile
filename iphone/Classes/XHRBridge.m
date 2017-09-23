@@ -49,6 +49,7 @@ static XHRBridge *xhrBridge = nil;
 
 - (void)handleAppToTiRequest
 {
+<<<<<<< HEAD
   id<NSURLProtocolClient> client = [self client];
   NSURLRequest *request = [self request];
   NSURL *url = [request URL];
@@ -109,6 +110,80 @@ static XHRBridge *xhrBridge = nil;
     [client URLProtocol:self didFailWithError:[NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorResourceUnavailable userInfo:nil]];
     [client URLProtocolDidFinishLoading:self];
   }
+=======
+	id<NSURLProtocolClient> client = [self client];
+    NSURLRequest *request = [self request];
+	NSURL *url = [request URL];
+
+	NSArray *parts = [[[url path] substringFromIndex:1] componentsSeparatedByString:@"/"];
+	NSString *pageToken = [[parts objectAtIndex:0] stringByReplacingOccurrencesOfString:@"_TiA0_" withString:@""];
+	NSString *module = [parts objectAtIndex:1];
+	NSString *method = [parts objectAtIndex:2];
+	NSString *prearg = [url query];
+	NSString *arguments = prearg==nil ? @"" : [prearg stringByRemovingPercentEncoding];
+
+	// Decode Ascii unicode-characters
+	NSString *decodevalue = [[NSString alloc] initWithData:[arguments dataUsingEncoding:NSUTF8StringEncoding]
+                                                  encoding:NSNonLossyASCIIStringEncoding];
+
+	// Replace < and > characters with quotes
+	NSString *jsonString = [[decodevalue stringByReplacingOccurrencesOfString:@"<" withString:@"\""]
+                            stringByReplacingOccurrencesOfString:@">"
+                            withString:@"\""];
+
+	// Parse the JSON-string to a dictionary
+	NSDictionary *event = [TiUtils jsonParse:jsonString];
+
+	id<TiEvaluator> context = [[xhrBridge host] contextForToken:pageToken];
+	TiModule *tiModule = (TiModule*)[[xhrBridge host] moduleNamed:module context:context];
+	[tiModule setExecutionContext:context];
+	
+	BOOL executed = YES;
+	
+	NSString *name = [event objectForKey:@"name"];
+	if ([method isEqualToString:@"fireEvent"])
+	{
+		[tiModule fireEvent:name withObject:[event objectForKey:@"event"]];  
+	}
+	else if ([method isEqualToString:@"addEventListener"])
+	{
+		id listenerid = [event objectForKey:@"id"];
+		[tiModule addEventListener:[NSArray arrayWithObjects:name,listenerid,nil]];
+	}
+	else if ([method isEqualToString:@"removeEventListener"])
+	{
+		id listenerid = [event objectForKey:@"id"];
+		[tiModule removeEventListener:[NSArray arrayWithObjects:name,listenerid,nil]];
+	}
+	else if ([method isEqualToString:@"log"])
+	{
+		NSString *level = [event objectForKey:@"level"];
+		NSString *message = [event objectForKey:@"message"];
+		[tiModule performSelector:@selector(log:) withObject:[NSArray arrayWithObjects:level,message,nil]];
+	}
+	else
+	{
+		executed = NO;
+	}
+	
+	NSData *data = executed ? [NSData data] : nil;
+	
+	if (data!=nil)
+	{
+		NSURLCacheStoragePolicy caching = NSURLCacheStorageNotAllowed;
+		NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:url MIMEType:@"text/plain" expectedContentLength:[data length] textEncodingName:@"utf-8"];
+		[client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:caching];
+		[client URLProtocol:self didLoadData:data];
+		[client URLProtocolDidFinishLoading:self];
+		[response release];
+	}
+	else 
+	{
+		DebugLog(@"[ERROR] Error loading %@",url);
+		[client URLProtocol:self didFailWithError:[NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorResourceUnavailable userInfo:nil]];
+		[client URLProtocolDidFinishLoading:self];
+	}
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 - (void)startLoading

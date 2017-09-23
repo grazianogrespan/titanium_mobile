@@ -700,6 +700,7 @@ MAKE_SYSTEM_PROP(VIDEO_TIME_OPTION_EXACT, MPMovieTimeOptionExact);
         return NUMBOOL(YES);
       }
     }
+<<<<<<< HEAD
   }
   return NUMBOOL(NO);
 }
@@ -752,6 +753,17 @@ MAKE_SYSTEM_PROP(VIDEO_TIME_OPTION_EXACT, MPMovieTimeOptionExact);
   TiBlob *blob = [[[TiBlob alloc] _initWithPageContext:[self pageContext] andImage:image] autorelease];
   NSDictionary *event = [NSDictionary dictionaryWithObject:blob forKey:@"media"];
   [self _fireEventToListener:@"screenshot" withObject:event listener:arg thisObject:nil];
+=======
+    
+    // Retrieve the screenshot image
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    TiBlob *blob = [[[TiBlob alloc] _initWithPageContext:[self pageContext] andImage:image] autorelease];
+    NSDictionary *event = [NSDictionary dictionaryWithObject:blob forKey:@"media"];
+    [self _fireEventToListener:@"screenshot" withObject:event listener:arg thisObject:nil];
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 #ifdef USE_TI_MEDIASAVETOPHOTOGALLERY
@@ -1011,6 +1023,7 @@ MAKE_SYSTEM_PROP(VIDEO_TIME_OPTION_EXACT, MPMovieTimeOptionExact);
 #ifdef USE_TI_MEDIAREQUESTPHOTOGALLERYPERMISSIONS
 - (void)requestPhotoGalleryPermissions:(id)arg
 {
+<<<<<<< HEAD
   ENSURE_SINGLE_ARG(arg, KrollCallback);
   KrollCallback *callback = arg;
 
@@ -1025,12 +1038,28 @@ MAKE_SYSTEM_PROP(VIDEO_TIME_OPTION_EXACT, MPMovieTimeOptionExact);
     }];
   },
       YES);
+=======
+    ENSURE_SINGLE_ARG(arg, KrollCallback);
+    KrollCallback * callback = arg;
+    
+    TiThreadPerformOnMainThread(^(){
+        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+            BOOL granted = (status == PHAuthorizationStatusAuthorized);
+            NSString *errorMessage = granted ? @"" : @"The user denied access to use the photo gallery.";
+            KrollEvent *invocationEvent = [[[KrollEvent alloc] initWithCallback:callback
+                                                                   eventObject:[TiUtils dictionaryWithCode:(granted ? 0 : 1) message:errorMessage]
+                                                                    thisObject:self] autorelease];
+            [[callback context] enqueue:invocationEvent];
+        }];
+    }, YES);
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 #endif
 
 #ifdef USE_TI_MEDIAHASPHOTOGALLERYPERMISSIONS
 - (NSNumber *)hasPhotoGalleryPermissions:(id)unused
 {
+<<<<<<< HEAD
   NSString *galleryPermission = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSPhotoLibraryUsageDescription"];
 
   // Gallery permissions are required when selecting media from the gallery
@@ -1039,6 +1068,16 @@ MAKE_SYSTEM_PROP(VIDEO_TIME_OPTION_EXACT, MPMovieTimeOptionExact);
   }
 
   return NUMBOOL([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized);
+=======
+    NSString *galleryPermission = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSPhotoLibraryUsageDescription"];
+    
+    // Gallery permissions are required when selecting media from the gallery
+    if ([TiUtils isIOS10OrGreater] && !galleryPermission) {
+        NSLog(@"[ERROR] iOS 10 and later requires the key \"NSPhotoLibraryUsageDescription\" inside the plist in your tiapp.xml when accessing the photo library to store media. Please add the key and re-run the application.");
+    }
+    
+    return NUMBOOL([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized);
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 #endif
 
@@ -1434,6 +1473,7 @@ MAKE_SYSTEM_PROP(VIDEO_TIME_OPTION_EXACT, MPMovieTimeOptionExact);
 #if defined(USE_TI_MEDIASHOWCAMERA) || defined(USE_TI_MEDIAOPENPHOTOGALLERY) || defined(USE_TI_MEDIAOPENMUSICLIBRARY)
 - (void)displayModalPicker:(UIViewController *)picker_ settings:(NSDictionary *)args
 {
+<<<<<<< HEAD
   TiApp *tiApp = [TiApp app];
   if ([TiUtils isIPad] == NO) {
     [tiApp showModalController:picker_ animated:animatedPicker];
@@ -1443,6 +1483,33 @@ MAKE_SYSTEM_PROP(VIDEO_TIME_OPTION_EXACT, MPMovieTimeOptionExact);
 
     if (![popoverViewProxy isKindOfClass:[TiViewProxy class]]) {
       popoverViewProxy = nil;
+=======
+    TiApp * tiApp = [TiApp app];
+    if ([TiUtils isIPad]==NO) {
+        [tiApp showModalController:picker_ animated:animatedPicker];
+    }
+    else {
+        RELEASE_TO_NIL(popover);
+        TiViewProxy* popoverViewProxy = [args objectForKey:@"popoverView"];
+        
+        if (![popoverViewProxy isKindOfClass:[TiViewProxy class]]) {
+            popoverViewProxy = nil;
+        }
+        
+        self.popoverView = popoverViewProxy;
+        arrowDirection = [TiUtils intValue:@"arrowDirection" properties:args def:UIPopoverArrowDirectionAny];
+        
+        TiThreadPerformOnMainThread(^{
+            [self updatePopoverNow:picker_];
+        }, YES);
+	}
+}
+
+-(void)updatePopover:(NSNotification *)notification
+{
+    if (popover) {
+        [self performSelector:@selector(updatePopoverNow:) withObject:nil afterDelay:[[UIApplication sharedApplication] statusBarOrientationAnimationDuration] inModes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
     }
 
     self.popoverView = popoverViewProxy;
@@ -1457,6 +1524,7 @@ MAKE_SYSTEM_PROP(VIDEO_TIME_OPTION_EXACT, MPMovieTimeOptionExact);
 
 - (void)updatePopover:(NSNotification *)notification
 {
+<<<<<<< HEAD
   if (popover) {
     [self performSelector:@selector(updatePopoverNow:) withObject:nil afterDelay:[[UIApplication sharedApplication] statusBarOrientationAnimationDuration] inModes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
   }
@@ -1470,6 +1538,15 @@ MAKE_SYSTEM_PROP(VIDEO_TIME_OPTION_EXACT, MPMovieTimeOptionExact);
   [thePresenter setPermittedArrowDirections:arrowDirection];
   [thePresenter setDelegate:self];
   [[TiApp app] showModalController:theController animated:animatedPicker];
+=======
+    UIViewController* theController = picker_;
+    [theController setModalPresentationStyle:UIModalPresentationPopover];
+    UIPopoverPresentationController* thePresenter = [theController popoverPresentationController];
+    [thePresenter setPermittedArrowDirections:arrowDirection];
+    [thePresenter setDelegate:self];
+    [[TiApp app] showModalController:theController animated:animatedPicker];
+    return;
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 #endif
 
@@ -1613,6 +1690,7 @@ MAKE_SYSTEM_PROP(VIDEO_TIME_OPTION_EXACT, MPMovieTimeOptionExact);
 #ifndef TI_USE_AUTOLAYOUT
       ApplyConstraintToViewWithBounds([cameraViewProxy layoutProperties], (TiUIView *)view, [[UIScreen mainScreen] bounds]);
 #else
+<<<<<<< HEAD
       [TiUtils setView:view
           positionRect:view.bounds];
 #endif
@@ -1622,6 +1700,40 @@ MAKE_SYSTEM_PROP(VIDEO_TIME_OPTION_EXACT, MPMovieTimeOptionExact);
 
       [cameraView windowDidOpen];
       [cameraView layoutChildren:NO];
+=======
+            [TiUtils setView:view positionRect:view.bounds];
+#endif
+            
+            [cameraView windowWillOpen];
+            [picker setCameraOverlayView:view];
+            
+            [cameraView windowDidOpen];
+            [cameraView layoutChildren:NO];
+        }
+        
+        // allow a transform on the preview image
+        id transform = [args objectForKey:@"transform"];
+        if (transform!=nil)
+        {
+            ENSURE_TYPE(transform,Ti2DMatrix);
+            [picker setCameraViewTransform:[transform matrix]];
+        }
+        else if (cameraView!=nil && customPicker)
+        {
+            //No transforms in popover
+            CGSize screenSize = [[UIScreen mainScreen] bounds].size;
+            UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+            if (!UIInterfaceOrientationIsPortrait(orientation)) {
+                screenSize = CGSizeMake(screenSize.height, screenSize.width);
+            }
+            float cameraAspectRatio = 4.0 / 3.0;
+            float camViewHeight = screenSize.width * cameraAspectRatio;
+            float scale = screenSize.height/camViewHeight;
+            
+            CGAffineTransform translate = CGAffineTransformMakeTranslation(0, (screenSize.height - camViewHeight) / 2.0);
+            picker.cameraViewTransform = CGAffineTransformScale(translate, scale, scale);
+        }
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
     }
 
     // allow a transform on the preview image

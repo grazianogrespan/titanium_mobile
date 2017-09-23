@@ -218,6 +218,7 @@ MAKE_SYSTEM_NUMBER(PROGRESS_UNKNOWN, NUMINT(-1));
 
 - (NSNumber *)remoteNotificationsEnabled
 {
+<<<<<<< HEAD
   __block BOOL enabled;
   TiThreadPerformOnMainThread(^{
     enabled = [[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
@@ -285,6 +286,77 @@ MAKE_SYSTEM_NUMBER(PROGRESS_UNKNOWN, NUMINT(-1));
 {
   UIApplication *app = [UIApplication sharedApplication];
   [app unregisterForRemoteNotifications];
+=======
+    __block BOOL enabled;
+    TiThreadPerformOnMainThread(^{
+        enabled = [[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
+    }, YES);
+    return NUMBOOL(enabled);
+}
+
+- (NSArray*)remoteNotificationTypes
+{
+    __block NSUInteger types;
+    NSMutableArray *result = [NSMutableArray array];
+    TiThreadPerformOnMainThread(^{
+        types = [[[UIApplication sharedApplication] currentUserNotificationSettings] types];
+    }, YES);
+    if ((types & UIUserNotificationTypeBadge) != 0)
+    {
+        [result addObject:NUMINT(1)];
+    }
+    if ((types & UIUserNotificationTypeAlert) != 0)
+    {
+        [result addObject:NUMINT(2)];
+    }
+    if ((types & UIUserNotificationTypeSound) != 0)
+    {
+        [result addObject:NUMINT(3)];
+    }
+    return result;
+}
+
+-(void)registerForPushNotifications:(id)args
+{
+	ENSURE_SINGLE_ARG(args,NSDictionary);
+    ENSURE_UI_THREAD(registerForPushNotifications, args);
+	
+	RELEASE_TO_NIL(pushNotificationCallback);
+	RELEASE_TO_NIL(pushNotificationError);
+	RELEASE_TO_NIL(pushNotificationSuccess);
+	
+	pushNotificationSuccess = [[args objectForKey:@"success"] retain];
+	pushNotificationError = [[args objectForKey:@"error"] retain];
+	pushNotificationCallback = [[args objectForKey:@"callback"] retain];
+	
+	[[TiApp app] setRemoteNotificationDelegate:self];
+    
+    UIApplication * app = [UIApplication sharedApplication];
+    
+	//for iOS8 or greater only
+	//Note adviced to register user notification settings in Ti.App.iOS first before register for remote notifications
+    [app registerForRemoteNotifications];
+    
+    if ([args objectForKey:@"types"] != nil) {
+        NSLog(@"[WARN] Passing `types` to registerForPushNotifications is not supported on iOS 8 and greater. Use registerUserNotificationSettings to register notification types.");
+    }
+    // check to see upon registration if we were started with a push
+    // notification and if so, go ahead and trigger our callback
+	id currentNotification = [[TiApp app] remoteNotification];
+	if (currentNotification!=nil && pushNotificationCallback!=nil)
+	{
+		NSMutableDictionary * event = [TiUtils dictionaryWithCode:0 message:nil];
+		[event setObject:currentNotification forKey:@"data"];
+		[event setObject:NUMBOOL(YES) forKey:@"inBackground"];
+		[self _fireEventToListener:@"remote" withObject:event listener:pushNotificationCallback thisObject:nil];
+	}
+}
+
+-(void)unregisterForPushNotifications:(id)args
+{
+	UIApplication * app = [UIApplication sharedApplication];
+	[app unregisterForRemoteNotifications];
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 #pragma mark Push Notification Delegates

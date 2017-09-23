@@ -209,6 +209,7 @@ CFMutableSetRef krollBridgeRegistry = nil;
 #if KROLLBRIDGE_MEMORY_DEBUG == 1
     NSLog(@"[DEBUG] INIT: %@", self);
 #endif
+<<<<<<< HEAD
     modules = [[NSMutableDictionary alloc] init];
     pathCache = [[NSMutableDictionary alloc] init];
     proxyLock = OS_SPINLOCK_INIT;
@@ -221,6 +222,17 @@ CFMutableSetRef krollBridgeRegistry = nil;
         NO);
   }
   return self;
+=======
+		modules = [[NSMutableDictionary alloc] init];
+		pathCache = [[NSMutableDictionary alloc] init];
+		proxyLock = OS_SPINLOCK_INIT;
+		OSSpinLockLock(&krollBridgeRegistryLock);
+		CFSetAddValue(krollBridgeRegistry, self);
+		OSSpinLockUnlock(&krollBridgeRegistryLock);
+		TiThreadPerformOnMainThread(^{[self registerForMemoryWarning];}, NO);
+	}
+	return self;
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 - (void)didReceiveMemoryWarning:(NSNotification *)notification
@@ -708,7 +720,11 @@ CFMutableSetRef krollBridgeRegistry = nil;
   return result;
 }
 
+<<<<<<< HEAD
 - (KrollWrapper *)loadCommonJSModule:(NSString *)code withSourceURL:(NSURL *)sourceURL
+=======
+-(KrollWrapper *)loadCommonJSModule:(NSString*)code withSourceURL:(NSURL *)sourceURL
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 {
   // This takes care of resolving paths like `../../foo.js`
   sourceURL = [NSURL fileURLWithPath:[[sourceURL path] stringByStandardizingPath]];
@@ -762,6 +778,7 @@ CFMutableSetRef krollBridgeRegistry = nil;
 
 - (TiModule *)loadTopLevelNativeModule:(TiModule *)module withPath:(NSString *)path withContext:(KrollContext *)kroll
 {
+<<<<<<< HEAD
   // does it have JS? No, then nothing else to do...
   if (![module isJSModule]) {
     return module;
@@ -798,6 +815,109 @@ CFMutableSetRef krollBridgeRegistry = nil;
   TiPropertyNameArrayRelease(properties);
 
   return module;
+=======
+	// does it have JS? No, then nothing else to do...
+	if (![module isJSModule]) {
+		return module;
+	}
+	NSData* data = [module moduleJS];
+	if (data == nil) {
+		// Uh oh, no actual data. Let's just punt and return the native module as-is
+		return module;
+	}
+
+	NSString* contents = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+	NSURL *url_ = [TiHost resourceBasedURL:path baseURL:NULL];
+	KrollWrapper *wrapper = [self loadCommonJSModule:contents withSourceURL:url_];
+
+	// For right now, we need to mix any compiled JS on top of a compiled module, so that both components
+	// are accessible. We store the exports object and then put references to its properties on the toplevel
+	// object.
+
+	TiContextRef jsContext = [[self krollContext] context];
+	TiObjectRef jsObject = [wrapper jsobject];
+	KrollObject* moduleObject = [module krollObjectForContext:[self krollContext]];
+	[moduleObject noteObject:jsObject forTiString:kTiStringExportsKey context:jsContext];
+
+	TiPropertyNameArrayRef properties = TiObjectCopyPropertyNames(jsContext, jsObject);
+	size_t count = TiPropertyNameArrayGetCount(properties);
+	for (size_t i=0; i < count; i++) {
+		// Mixin the property onto the module JS object if it's not already there
+		TiStringRef propertyName = TiPropertyNameArrayGetNameAtIndex(properties, i);
+		if (!TiObjectHasProperty(jsContext, [moduleObject jsobject], propertyName)) {
+			TiValueRef property = TiObjectGetProperty(jsContext, jsObject, propertyName, NULL);
+			TiObjectSetProperty([[self krollContext] context], [moduleObject jsobject], propertyName, property, kTiPropertyAttributeReadOnly, NULL);
+		}
+	}
+	TiPropertyNameArrayRelease(properties);
+
+	return module;
+}
+
+- (id)loadCoreModule:(NSString *)path withContext:(KrollContext *)kroll
+{
+	// make sure path doesn't begin with ., .., or /
+	// Can't be a "core" module then
+	if ([path hasPrefix:@"/"] || [path hasPrefix:@"."]) {
+		return nil;
+	}
+
+	// moduleId then is the first path component
+	// try to load up the native module's class...
+	NSString *moduleID = [[path pathComponents] objectAtIndex:0];
+	NSString *moduleClassName = [self pathToModuleClassName:moduleID];
+	Class moduleClass = NSClassFromString(moduleClassName);
+	// If no such module exists, bail out!
+	if (moduleClass == nil) {
+		return nil;
+	}
+
+	// If there is a JS file that collides with the given path,
+	// warn the user of the collision, but prefer the native/core module
+	NSURL *jsPath = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@.js", [[NSURL fileURLWithPath:[TiHost resourcePath] isDirectory:YES] path], path]];
+	if ([[NSFileManager defaultManager] fileExistsAtPath:[jsPath absoluteString]]) {
+		NSLog(@"[WARN] The requested path '%@' has a collison between a native Ti%@um API/module and a JS file.", path, @"tani");
+		NSLog(@"[WARN] The native Ti%@um API/module will be loaded in preference.", @"tani");
+		NSLog(@"[WARN] If you intended to address the JS file, please require the path using a prefixed string such as require('./%@') or require('/%@') instead.", path, path);
+	}
+
+	// Ok, we have a native module, make sure instantiate and cache it
+	TiModule *module = [modules objectForKey:moduleID];
+	if (module == nil) {
+		module = [[moduleClass alloc] _initWithPageContext:self];
+		[module setHost:host];
+		[module _setName:moduleClassName];
+		[modules setObject:module forKey:moduleID];
+		[module autorelease];
+	}
+
+	// Are they just trying to load the top-level module?
+	NSRange separatorLocation = [path rangeOfString:@"/"];
+	if (separatorLocation.location == NSNotFound) {
+		// Indicates toplevel module
+		return [self loadTopLevelNativeModule:module withPath:path withContext:kroll];
+	}
+
+	// check rest of path
+	NSString* assetPath = [path substringFromIndex: separatorLocation.location + 1];
+	// Treat require('module.id/module.id') == require('module.id')
+	if ([assetPath isEqualToString:moduleID]) {
+		return [self loadTopLevelNativeModule:module withPath:path withContext:kroll];
+	}
+
+	// not top-level module!
+	// Try to load the file as module asset!
+	NSString* filepath = [assetPath stringByAppendingString:@".js"];
+	NSData* data = [module loadModuleAsset:filepath];
+	// does it exist in module?
+	if (data == nil) {
+		// nope, return nil so we can try to fall back to resource in user's app
+		return nil;
+	}
+	NSString* contents = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+	// This is an asset inside the native module. Load it like a "normal" common js file
+	return [self loadJavascriptText:contents fromFile:filepath withContext:kroll];
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 - (id)loadCoreModule:(NSString *)path withContext:(KrollContext *)kroll
@@ -903,6 +1023,7 @@ CFMutableSetRef krollBridgeRegistry = nil;
   return [self loadJavascriptText:data fromFile:filename withContext:kroll];
 }
 
+<<<<<<< HEAD
 - (KrollWrapper *)loadJavascriptText:(NSString *)data fromFile:(NSString *)filename withContext:(KrollContext *)kroll
 {
   NSURL *url_ = [TiHost resourceBasedURL:filename baseURL:NULL];
@@ -926,6 +1047,12 @@ CFMutableSetRef krollBridgeRegistry = nil;
                                    reason:[NSString stringWithFormat:@"Module \"%@\" failed to leave a valid exports object", filename]
                                  userInfo:nil];
   }
+=======
+- (KrollWrapper *)loadJavascriptObject:(NSString *)data fromFile:(NSString *)filename withContext:(KrollContext *)kroll
+{
+	// We could cheat and just do "module.exports = %data%", but that wouldn't validate that the passed in content was JSON
+	// and may open a security hole.
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 
   // register the module if it's pure JS
   KrollWrapper *module = (id)wrapper;
@@ -941,6 +1068,7 @@ CFMutableSetRef krollBridgeRegistry = nil;
   return module;
 }
 
+<<<<<<< HEAD
 - (KrollWrapper *)cachedLoadAsFile:(NSString *)path asJSON:(BOOL)json withContext:(KrollContext *)kroll
 {
   // check cache first
@@ -961,6 +1089,19 @@ CFMutableSetRef krollBridgeRegistry = nil;
   }
   return nil;
 }
+=======
+- (KrollWrapper *)loadJavascriptText:(NSString *)data fromFile:(NSString *)filename withContext:(KrollContext *)kroll
+{
+	NSURL *url_ = [TiHost resourceBasedURL:filename baseURL:NULL];
+#ifndef USE_JSCORE_FRAMEWORK
+	const char *urlCString = [[url_ absoluteString] UTF8String];
+	if ([[self host] debugMode]) {
+		TiDebuggerBeginScript([self krollContext], urlCString);
+	}
+#endif
+
+	KrollWrapper *wrapper = [self loadCommonJSModule:data withSourceURL:url_];
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 
 - (KrollWrapper *)loadAsFile:(NSString *)path withContext:(KrollContext *)kroll
 {
@@ -1033,6 +1174,7 @@ CFMutableSetRef krollBridgeRegistry = nil;
   return nil;
 }
 
+<<<<<<< HEAD
 - (KrollWrapper *)loadAsFileOrDirectory:(NSString *)path withContext:(KrollContext *)kroll
 {
   // FIXME Can we improve perf a little here by detecting if the target is a file or directory first?
@@ -1057,10 +1199,149 @@ CFMutableSetRef krollBridgeRegistry = nil;
   }
 
   return nil;
+=======
+	if (![wrapper respondsToSelector:@selector(replaceValue:forKey:notification:)]) {
+		@throw [NSException exceptionWithName:@"org.appcelerator.kroll"
+										 reason:[NSString stringWithFormat:@"Module \"%@\" failed to leave a valid exports object", filename]
+									 userInfo:nil];
+	}
+
+	// register the module if it's pure JS
+	KrollWrapper *module = (id)wrapper;
+
+	// cache the module by filename
+	[modules setObject:module forKey:filename];
+	if (filename != nil && module != nil) {
+		// uri is optional but we point it to where we loaded it
+		[module replaceValue:[NSString stringWithFormat:@"app://%@", filename] forKey:@"uri" notification:NO];
+		[module replaceValue:filename forKey:@"id" notification:NO];  // set id to full path, originally this was the path from require call
+	}
+
+	return module;
+}
+
+- (KrollWrapper *)cachedLoadAsFile:(NSString *)path asJSON:(BOOL)json withContext:(KrollContext *)kroll
+{
+	// check cache first
+	if (modules != nil) {
+		KrollWrapper *module = [modules objectForKey:path];
+		if (module != nil) {
+			return module;
+		}
+	}
+
+	// Fall back to trying to load file
+	NSString *data = [self loadFile:path];
+	if (data != nil) {
+		if (json) {
+			return [self loadJavascriptObject:data fromFile:path withContext:context];
+		}
+		return [self loadJavascriptText:data fromFile:path withContext:context];
+	}
+	return nil;
+}
+
+- (KrollWrapper *)loadAsFile:(NSString *)path withContext:(KrollContext *)kroll
+{
+	NSString *filename = path;
+
+	// 1. If X is a file, load X as JavaScript text.  STOP
+	// Note: I modified the algorithm here to handle .json files as JSON, everything else as JS
+	NSString *ext = [filename pathExtension];
+	BOOL json = (ext != nil && [ext isEqual:@"json"]);
+	KrollWrapper *module = [self cachedLoadAsFile:filename asJSON:json withContext:context];
+	if (module != nil) {
+		return module;
+	}
+
+	// 2. If X.js is a file, load X.js as JavaScript text.  STOP
+	filename = [path stringByAppendingString:@".js"];
+	module = [self cachedLoadAsFile:filename asJSON:NO withContext:context];
+	if (module != nil) {
+		return module;
+	}
+
+	// 3. If X.json is a file, parse X.json to a JavaScript Object.  STOP
+	filename = [path stringByAppendingString:@".json"];
+	module = [self cachedLoadAsFile:filename asJSON:YES withContext:context];
+	if (module != nil) {
+		return module;
+	}
+
+	// failed to load anything!
+	return nil;
+}
+
+- (KrollWrapper *)loadAsDirectory:(NSString *)path withContext:(KrollContext *)kroll
+{
+	// FIXME Use loadJavascriptObject: or cachedLoadAsFile: to get package.json and then get the main value out of it?
+	// 1. If X/package.json is a file,
+	NSString *filename = [path stringByAppendingPathComponent:@"package.json"];
+	NSString *data = [self loadFile:filename];
+	if (data != nil) {
+		// a. Parse X/package.json, and look for "main" field.
+		// Just cheat and use TiUtils.jsonParse here, rather than loading the package.json as a JS object...
+		NSDictionary *json = [TiUtils jsonParse:data];
+		if (json != nil) {
+			id main = [json objectForKey:@"main"];
+			NSString *mainString = nil;
+			if ([main isKindOfClass:[NSString class]]) {
+				mainString = (NSString *)main;
+				// b. let M = X + (json main field)
+				NSString *m = [[path stringByAppendingPathComponent:mainString] stringByStandardizingPath];
+				// c. LOAD_AS_FILE(M)
+				return [self loadAsFile:m withContext:context];
+			}
+		}
+	}
+
+	// 2. If X/index.js is a file, load X/index.js as JavaScript text.  STOP
+	filename = [path stringByAppendingPathComponent:@"index.js"];
+	KrollWrapper *module = [self cachedLoadAsFile:filename asJSON:NO withContext:context];
+	if (module != nil) {
+		return module;
+	}
+
+	// 3. If X/index.json is a file, parse X/index.json to a JavaScript object. STOP
+	filename = [path stringByAppendingPathComponent:@"index.json"];
+	module = [self cachedLoadAsFile:filename asJSON:YES withContext:context];
+	if (module != nil) {
+		return module;
+	}
+
+	return nil;
+}
+
+- (KrollWrapper *)loadAsFileOrDirectory:(NSString *)path withContext:(KrollContext *)kroll
+{
+	// FIXME Can we improve perf a little here by detecting if the target is a file or directory first?
+	// i.e.
+	// - if node_modules/whatever exists and is a dir, we can skip checking for node_modules/whatever.js at least
+	// - if it doesn't exist at all, we can skip checking:
+	//    - node_modules/whatever
+	//    - node_modules/whatever/index.js
+	//    - node_modules/whatever/package.json
+	//    - node_modules/whatever/index.json
+	//    - node_modules/whatever/whatever.js
+
+	// a. LOAD_AS_FILE(Y + X)
+	KrollWrapper *module = [self loadAsFile:path withContext:context];
+	if (module) {
+		return module;
+	}
+	// b. LOAD_AS_DIRECTORY(Y + X)
+	module = [self loadAsDirectory:path withContext:context];
+	if (module) {
+		return module;
+	}
+
+	return nil;
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 - (NSArray *)nodeModulesPaths:(NSString *)path
 {
+<<<<<<< HEAD
   // Note that in this function paths must be returned with no leading slash
   // i.e "node_modules" rather than "/node_modules" (like Android does)
 
@@ -1094,10 +1375,46 @@ CFMutableSetRef krollBridgeRegistry = nil;
   // Always add /node_modules to the search path
   [dirs addObject:@"node_modules"];
   return dirs;
+=======
+	// Note that in this function paths must be returned with no leading slash
+	// i.e "node_modules" rather than "/node_modules" (like Android does)
+
+	NSMutableArray *dirs = [NSMutableArray arrayWithCapacity:0];
+	// Return early if we are at root, this avoids doing a pointless loop
+	// and also returning an array with duplicate entries
+	// e.g. ["node_modules", "node_modules"]
+	if (path == nil) {
+		[dirs addObject:@"node_modules"];
+		return dirs;
+	}
+	// 1. let PARTS = path split(START)
+	NSArray *parts = [path componentsSeparatedByString:@"/"];
+	// 2. let I = count of PARTS - 1
+	NSInteger i = [parts count] - 1;
+	// 3. let DIRS = []
+	// 4. while I >= 0,
+	while (i >= 0) {
+		// a. if PARTS[I] = "node_modules" CONTINUE
+		if ([[parts objectAtIndex:i] isEqual: @"node_modules"] || [[parts objectAtIndex:i] isEqual: @""]) {
+			i = i - 1;
+			continue;
+		}
+		// b. DIR = path join(PARTS[0 .. I] + "node_modules")
+		NSString *dir = [[[parts subarrayWithRange:NSMakeRange(0, i + 1)] componentsJoinedByString:@"/"] stringByAppendingPathComponent:@"node_modules"];
+		// c. DIRS = DIRS + DIR
+		[dirs addObject:dir];
+		// d. let I = I - 1
+		i = i - 1;
+	}
+	// Always add /node_modules to the search path
+	[dirs addObject:@"node_modules"];
+	return dirs;
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 - (KrollWrapper *)loadNodeModules:(NSString *)path withDir:(NSString *)start withContext:(KrollContext *)kroll
 {
+<<<<<<< HEAD
   KrollWrapper *module = nil;
 
   // 1. let DIRS=NODE_MODULES_PATHS(START)
@@ -1112,10 +1429,28 @@ CFMutableSetRef krollBridgeRegistry = nil;
     }
   }
   return nil;
+=======
+	KrollWrapper *module = nil;
+
+	// 1. let DIRS=NODE_MODULES_PATHS(START)
+	NSArray *dirs = [self nodeModulesPaths:start];
+	// 2. for each DIR in DIRS:
+	for (NSString *dir in dirs)
+	{
+		// a. LOAD_AS_FILE(DIR/X)
+		// b. LOAD_AS_DIRECTORY(DIR/X)
+		module = [self loadAsFileOrDirectory:[dir stringByAppendingPathComponent:path] withContext:context];
+		if (module) {
+			return module;
+		}
+	}
+	return nil;
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 - (id)require:(KrollContext *)kroll path:(NSString *)path
 {
+<<<<<<< HEAD
   NSURL *oldURL = [self currentURL];
   NSString *workingPath = [oldURL relativePath];
   NSMutableString *pathCacheKey;
@@ -1220,6 +1555,113 @@ CFMutableSetRef krollBridgeRegistry = nil;
   // 4. THROW "not found"
   NSString *arch = [TiUtils currentArchitecture];
   @throw [NSException exceptionWithName:@"org.test.kroll" reason:[NSString stringWithFormat:@"Couldn't find module: %@ for architecture: %@", path, arch] userInfo:nil]; // TODO Set 'code' property to 'MODULE_NOT_FOUND' to match Node?
+=======
+	NSURL *oldURL = [self currentURL];
+	NSString *workingPath = [oldURL relativePath];
+	NSMutableString *pathCacheKey;
+	@try {
+		// First let's check if we cached the resolved path for this require string
+		// and if we did, try and load a cached module for this path
+		if (pathCache != nil && modules != nil) {
+			// We generate a path resolution cache key, first part is the requested module id/path
+			pathCacheKey = [path stringByAppendingString:@"|"];
+			// If request is not-absolute and we're not at the top-level dir, then append current dir as second part of cache key
+			if (workingPath != nil && ![path hasPrefix:@"/"]) {
+				pathCacheKey = [pathCacheKey stringByAppendingString: workingPath];
+			}
+			NSString *resolvedPath = [pathCache objectForKey:pathCacheKey];
+			if (resolvedPath != nil) {
+				TiModule *module = [modules objectForKey:resolvedPath];
+				if (module != nil) {
+					return module;
+				}
+			}
+		}
+
+		id module; // may be TiModule* if it was a core module with no hybrid JS, or KrollWrapper* in all other cases
+		@try {
+			// 1. If X is a core module,
+			module = [self loadCoreModule:path withContext:kroll];
+			if (module) {
+				// a. return the core module
+				// b. STOP
+				return module;
+			}
+
+			// 2. If X begins with './' or '/' or '../'
+			if ([path hasPrefix:@"./"] || [path hasPrefix:@"../"]) {
+				// Need base path to work from for relative modules...
+				NSString *relativePath = (workingPath == nil) ? path : [workingPath stringByAppendingPathComponent:path];
+				module = [self loadAsFileOrDirectory:[relativePath stringByStandardizingPath] withContext:context];
+				if (module) {
+					return module;
+				}
+				// Treat '/' special as absolute, drop the leading '/'
+			}
+			else if ([path hasPrefix:@"/"]) {
+				module = [self loadAsFileOrDirectory:[[path substringFromIndex:1] stringByStandardizingPath] withContext:context];
+				if (module) {
+					return module;
+				}
+			} else {
+				// TODO Grab the first path segment and see if it's a node module or commonJS module
+				// We should be able to organize the modules in folder to determine if the user is attempting to
+				// load one of them!
+
+				// Look for CommonJS module
+				if (![path containsString:@"/"]) {
+					// For CommonJS we need to look for module.id/module.id.js first...
+					// Only look for this _exact file_. DO NOT APPEND .js or .json to it!
+					NSString *filename = [[path stringByAppendingPathComponent:path] stringByAppendingPathExtension:@"js"];
+					module = [self cachedLoadAsFile:filename asJSON:NO withContext:context];
+					if (module) {
+						return module;
+					}
+
+					// Then try module.id as directory
+					module = [self loadAsDirectory:path withContext:context];
+					if (module) {
+						return module;
+					}
+				}
+
+				// Need base path to work from for determining the node_modules search paths.
+				module = [self loadNodeModules:path withDir:workingPath withContext:context];
+				if (module) {
+					return module;
+				}
+
+				// We'd like to warn users about legacy style require syntax so they can update, but the new syntax is not backwards compatible.
+				// So for now, let's just be quite about it. In future versions of the SDK (7.0?) we should warn (once 5.x is end of life so backwards compat is not necessary)
+				//NSLog(@"require called with un-prefixed module id: %@, should be a core or CommonJS module. Falling back to old Ti behavior and assuming it's an absolute path: /%@", path, path);
+				module = [self loadAsFileOrDirectory:[path stringByStandardizingPath] withContext:context];
+				if (module) {
+					return module;
+				}
+			}
+		}
+		@finally {
+			// Cache the resolved path for this request if we got a module
+			if (module != nil && pathCache != nil && pathCacheKey != nil) {
+				// I cannot find a nicer way of grabbing the filepath out of the "id" or "uri" properties for the module!
+				NSArray *keys = [modules allKeysForObject:module];
+				if (keys != nil) {
+					NSString *filename = keys[0];
+					if (filename) { // native modules may have no value
+						[pathCache setObject:filename forKey:pathCacheKey];
+					}
+				}
+			}
+		}
+	}
+	@finally {
+		[self setCurrentURL:oldURL];
+	}
+
+	// 4. THROW "not found"
+	NSString *arch = [TiUtils currentArchitecture];
+	@throw [NSException exceptionWithName:@"org.test.kroll" reason:[NSString stringWithFormat:@"Couldn't find module: %@ for architecture: %@", path, arch] userInfo:nil];  // TODO Set 'code' property to 'MODULE_NOT_FOUND' to match Node?
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 + (NSArray *)krollBridgesUsingProxy:(id)proxy

@@ -53,8 +53,13 @@
 - (id)isSupported:(id)args
 {
 #if TARGET_IPHONE_SIMULATOR
+<<<<<<< HEAD
   DebugLog(@"[INFO] iOS Simulator does not support sending emails. Use a device instead.");
   return NUMBOOL(NO);
+=======
+    DebugLog(@"[INFO] iOS Simulator does not support sending emails. Use a device instead.");
+    return NUMBOOL(NO);
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 #endif
   return NUMBOOL([MFMailComposeViewController canSendMail]);
 }
@@ -78,6 +83,7 @@
   NSString *message = [TiUtils stringValue:[self valueForUndefinedKey:@"messageBody"]];
 
 #if TARGET_IPHONE_SIMULATOR
+<<<<<<< HEAD
   DebugLog(@"[INFO] iOS Simulator does not support sending emails. Use a device instead.");
   NSDictionary *event = [NSDictionary dictionaryWithObject:NUMINT(MFMailComposeResultFailed) forKey:@"result"];
   [self fireEvent:@"complete" withObject:event errorCode:MFMailComposeResultFailed message:@"iOS Simulator does not support sending emails. Use a device instead."];
@@ -131,6 +137,12 @@
   BOOL animated = [TiUtils boolValue:@"animated" properties:properties def:YES];
   [self retain];
   [[TiApp app] showModalController:composer animated:animated];
+=======
+    DebugLog(@"[INFO] iOS Simulator does not support sending emails. Use a device instead.");
+    NSDictionary *event = [NSDictionary dictionaryWithObject:NUMINT(MFMailComposeResultFailed) forKey:@"result"];
+    [self fireEvent:@"complete" withObject:event errorCode:MFMailComposeResultFailed message:@"iOS Simulator does not support sending emails. Use a device instead."];
+    return;
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 #endif
 }
 

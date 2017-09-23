@@ -63,6 +63,7 @@
 // Future-proofing for more sophisticated queue management
 - (NSArray *)itemsFromArg:(id)args
 {
+<<<<<<< HEAD
   id arg = args;
   if ([args isKindOfClass:[NSArray class]]) {
     arg = [args objectAtIndex:0];
@@ -99,6 +100,48 @@
   }
 
   return items;
+=======
+	id arg = args;
+	if ([args isKindOfClass:[NSArray class]]) {
+		arg = [args objectAtIndex:0];
+	}
+	NSMutableArray* items = [NSMutableArray array];
+	if ([arg isKindOfClass:[NSDictionary class]]) {
+		for (TiMediaItem* item in [arg objectForKey:@"items"]) {
+			[items addObject:[item item]];
+		}
+	}
+	else if ([arg isKindOfClass:[NSArray class]]) {
+		for (TiMediaItem* item in arg) {
+			[items addObject:[item item]];
+		}
+	}
+	else if ([arg isKindOfClass:[TiMediaItem class]]) {
+		[items addObject:[(TiMediaItem*)arg item]];
+	}
+	else if ([arg isKindOfClass:[NSString class]]) {
+		MPMediaQuery *query = [MPMediaQuery songsQuery];  // general songs query
+		MPMediaPropertyPredicate *predicate = [MPMediaPropertyPredicate predicateWithValue:arg forProperty:MPMediaItemPropertyPersistentID];
+
+		[query addFilterPredicate:predicate];
+		if ([query.items count] == 0) {
+			[self throwException:[NSString stringWithFormat:@"Invalid media item persistent ID %@ for player queue", arg]
+					   subreason:nil
+						location:CODELOCATION];
+            
+			return items;
+		}
+
+		[items addObject:[query.items firstObject]];
+	}
+	else {
+		[self throwException:[NSString stringWithFormat:@"Invalid object type %@ for player queue",[arg class]]
+				   subreason:nil
+					location:CODELOCATION];
+	}
+	
+	return items;
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 - (void)setQueue:(id)arg

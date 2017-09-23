@@ -115,20 +115,46 @@ bool Base64AllocAndEncodeData(const void *inInputData, size_t inInputDataSize, c
 
 + (BOOL)isRetinaFourInch
 {
+<<<<<<< HEAD
   CGSize mainScreenBoundsSize = [[UIScreen mainScreen] bounds].size;
   return (mainScreenBoundsSize.height == 568 || mainScreenBoundsSize.width == 568);
+=======
+    CGSize mainScreenBoundsSize = [[UIScreen mainScreen] bounds].size;
+    return (mainScreenBoundsSize.height == 568 || mainScreenBoundsSize.width == 568);
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 + (BOOL)isRetinaiPhone6
 {
+<<<<<<< HEAD
   CGSize mainScreenBoundsSize = [[UIScreen mainScreen] bounds].size;
   return (mainScreenBoundsSize.height == 667 || mainScreenBoundsSize.width == 667);
+=======
+    CGSize mainScreenBoundsSize = [[UIScreen mainScreen] bounds].size;
+    return (mainScreenBoundsSize.height == 667 || mainScreenBoundsSize.width == 667);
 }
 
 + (BOOL)isRetinaiPhone6Plus
 {
+    CGSize mainScreenBoundsSize = [[UIScreen mainScreen] bounds].size;
+    return (mainScreenBoundsSize.height == 736 || mainScreenBoundsSize.width == 736);
+}
+
++ (BOOL)isRetinaiPhoneX
+{
+    CGSize mainScreenBoundsSize = [[UIScreen mainScreen] bounds].size;
+    return (mainScreenBoundsSize.height == 812 || mainScreenBoundsSize.width == 812);
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
+}
+
++ (BOOL)isRetinaiPhone6Plus
+{
+<<<<<<< HEAD
   CGSize mainScreenBoundsSize = [[UIScreen mainScreen] bounds].size;
   return (mainScreenBoundsSize.height == 736 || mainScreenBoundsSize.width == 736);
+=======
+    return [UIScreen mainScreen].scale == 3.0;
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 + (BOOL)isRetinaiPhoneX
@@ -222,6 +248,18 @@ bool Base64AllocAndEncodeData(const void *inInputData, size_t inInputDataSize, c
 #endif
 }
 
+<<<<<<< HEAD
+=======
++ (BOOL)isIOS11OrGreater
+{
+#if IS_XCODE_9
+  return [TiUtils isIOSVersionOrGreater:@"11.0"];
+#else
+  return NO;
+#endif
+}
+
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 + (BOOL)isIOSVersionOrGreater:(NSString *)version
 {
   return [[[UIDevice currentDevice] systemVersion] compare:version options:NSNumericSearch] != NSOrderedAscending;
@@ -593,6 +631,7 @@ bool Base64AllocAndEncodeData(const void *inInputData, size_t inInputDataSize, c
 
 + (NSString *)hexColorValue:(UIColor *)color
 {
+<<<<<<< HEAD
   const CGFloat *components = CGColorGetComponents(color.CGColor);
 
   return [NSString stringWithFormat:@"#%02lX%02lX%02lX",
@@ -841,6 +880,271 @@ bool Base64AllocAndEncodeData(const void *inInputData, size_t inInputDataSize, c
   }
 
   return url;
+=======
+    const CGFloat *components = CGColorGetComponents(color.CGColor);
+    
+    return [NSString stringWithFormat:@"#%02lX%02lX%02lX",
+            lroundf(components[0] * 255),
+            lroundf(components[1] * 255),
+            lroundf(components[2] * 255)];
+}
+
++(TiDimension)dimensionValue:(id)value
+{
+	return TiDimensionFromObject(value);
+}
+
++(id)valueFromDimension:(TiDimension)dimension
+{
+	switch (dimension.type)
+	{
+		case TiDimensionTypeUndefined:
+			return [NSNull null];
+		case TiDimensionTypeAuto:
+			return @"auto";
+		case TiDimensionTypeDip:
+			return [NSNumber numberWithFloat:dimension.value];
+		default: {
+			break;
+		}
+	}
+	return nil;
+}
+
++(UIImage*)scaleImage:(UIImage *)image toSize:(CGSize)newSize
+{
+	if (!CGSizeEqualToSize(newSize, CGSizeZero))
+	{
+		CGSize imageSize = [image size];
+		if (newSize.width==0)
+		{
+			newSize.width = imageSize.width;
+		}
+		if (newSize.height==0)
+		{
+			newSize.height = imageSize.height;
+		}
+		if (!CGSizeEqualToSize(newSize, imageSize))
+		{
+			image = [UIImageResize resizedImage:newSize interpolationQuality:kCGInterpolationDefault image:image hires:NO];
+		}
+	}
+	return image;
+}
+
++(UIImage*)toImage:(id)object proxy:(TiProxy*)proxy size:(CGSize)imageSize
+{
+	if ([object isKindOfClass:[TiBlob class]])
+	{
+		return [self scaleImage:[(TiBlob *)object image] toSize:imageSize];
+	}
+
+	if ([object isKindOfClass:[TiFile class]])
+	{
+		TiFile *file = (TiFile*)object;
+		UIImage *image = [UIImage imageWithContentsOfFile:[file path]];
+		return [self scaleImage:image toSize:imageSize];
+	}
+
+	NSURL * urlAttempt = [self toURL:object proxy:proxy];
+	UIImage * image = [[ImageLoader sharedLoader] loadImmediateImage:urlAttempt withSize:imageSize];
+	return image;
+	//Note: If url is a nonimmediate image, this returns nil.
+}
+
++(UIImage*)toImage:(id)object proxy:(TiProxy*)proxy
+{
+	if ([object isKindOfClass:[TiBlob class]])
+	{
+		return [(TiBlob *)object image];
+	}
+
+	if ([object isKindOfClass:[TiFile class]])
+	{
+		TiFile *file = (TiFile*)object;
+		UIImage *image = [UIImage imageWithContentsOfFile:[file path]];
+		return image;
+	}
+
+	NSURL * urlAttempt = [self toURL:object proxy:proxy];
+	UIImage * image = [[ImageLoader sharedLoader] loadImmediateImage:urlAttempt];
+	return image;
+	//Note: If url is a nonimmediate image, this returns nil.
+}
+
++(UIImage *)adjustRotation:(UIImage *) image
+{
+    CGImageRef imgRef = image.CGImage;
+    CGFloat width = CGImageGetWidth(imgRef);
+    CGFloat height = CGImageGetHeight(imgRef);
+    CGAffineTransform transform = CGAffineTransformIdentity;
+    CGRect bounds = CGRectMake(0, 0, width, height);
+    CGFloat scaleRatio = bounds.size.width / width;
+    CGSize imageSize = CGSizeMake(CGImageGetWidth(imgRef), CGImageGetHeight(imgRef));
+    CGFloat boundHeight;
+    UIImageOrientation orient = image.imageOrientation;
+    switch(orient) {
+            
+        case UIImageOrientationUp: //EXIF = 1
+            transform = CGAffineTransformIdentity;
+            break;
+            
+        case UIImageOrientationUpMirrored: //EXIF = 2
+            transform = CGAffineTransformMakeTranslation(imageSize.width, 0.0);
+            transform = CGAffineTransformScale(transform, -1.0, 1.0);
+            break;
+            
+        case UIImageOrientationDown: //EXIF = 3
+            transform = CGAffineTransformMakeTranslation(imageSize.width, imageSize.height);
+            transform = CGAffineTransformRotate(transform, M_PI);
+            break;
+            
+        case UIImageOrientationDownMirrored: //EXIF = 4
+            transform = CGAffineTransformMakeTranslation(0.0, imageSize.height);
+            transform = CGAffineTransformScale(transform, 1.0, -1.0);
+            break;
+            
+        case UIImageOrientationLeftMirrored: //EXIF = 5
+            boundHeight = bounds.size.height;
+            bounds.size.height = bounds.size.width;
+            bounds.size.width = boundHeight;
+            transform = CGAffineTransformMakeTranslation(imageSize.height, imageSize.width);
+            transform = CGAffineTransformScale(transform, -1.0, 1.0);
+            transform = CGAffineTransformRotate(transform, 3.0 * M_PI / 2.0);
+            break;
+            
+        case UIImageOrientationLeft: //EXIF = 6
+            boundHeight = bounds.size.height;
+            bounds.size.height = bounds.size.width;
+            bounds.size.width = boundHeight;
+            transform = CGAffineTransformMakeTranslation(0.0, imageSize.width);
+            transform = CGAffineTransformRotate(transform, 3.0 * M_PI / 2.0);
+            break;
+            
+        case UIImageOrientationRightMirrored: //EXIF = 7
+            boundHeight = bounds.size.height;
+            bounds.size.height = bounds.size.width;
+            bounds.size.width = boundHeight;
+            transform = CGAffineTransformMakeScale(-1.0, 1.0);
+            transform = CGAffineTransformRotate(transform, M_PI / 2.0);
+            break;
+            
+        case UIImageOrientationRight: //EXIF = 8
+            boundHeight = bounds.size.height;
+            bounds.size.height = bounds.size.width;
+            bounds.size.width = boundHeight;
+            transform = CGAffineTransformMakeTranslation(imageSize.height, 0.0);
+            transform = CGAffineTransformRotate(transform, M_PI / 2.0);
+            break;
+            
+        default:
+            [NSException raise:NSInternalInconsistencyException format:@"Invalid image orientation"];
+    }
+    
+    UIGraphicsBeginImageContext(bounds.size);
+    
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    if (orient == UIImageOrientationRight || orient == UIImageOrientationLeft) {
+        CGContextScaleCTM(context, -scaleRatio, scaleRatio);
+        CGContextTranslateCTM(context, -height, 0);
+    } else {
+        CGContextScaleCTM(context, scaleRatio, -scaleRatio);
+        CGContextTranslateCTM(context, 0, -height);
+    }
+    
+    CGContextConcatCTM(context, transform);
+    
+    CGContextDrawImage(UIGraphicsGetCurrentContext(), CGRectMake(0, 0, width, height), imgRef);
+    UIImage *imageCopy = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return imageCopy;
+}
+
++(NSURL*)checkFor2XImage:(NSURL*)url
+{
+	NSString * path = nil;
+	
+	if([url isFileURL])
+	{
+		path = [url path];
+	}
+	
+	if([[url scheme] isEqualToString:@"app"])
+	{ //Technically, this will have an extra /, but iOS ignores this.
+		path = [url resourceSpecifier];
+	}
+
+	NSString *ext = [path pathExtension];
+
+	if(![ext isEqualToString:@"png"] && ![ext isEqualToString:@"jpg"] && ![ext isEqualToString:@"jpeg"])
+	{ //It's not an image.
+		return url;
+	}
+
+	//NOTE; I'm not sure the order here.. the docs don't necessarily 
+	//specify the exact order 
+	NSFileManager *fm = [NSFileManager defaultManager];
+	NSString *partial = [path stringByDeletingPathExtension];
+
+	NSString *os = [TiUtils isIPad] ? @"~ipad" : @"~iphone";
+
+	if ([TiUtils isRetinaHDDisplay]) {
+		// first try -736h@3x iPhone 6 Plus specific
+		NSString *testpath = [NSString stringWithFormat:@"%@-736h@3x.%@",partial,ext];
+		if ([fm fileExistsAtPath:testpath]) {
+			return [NSURL fileURLWithPath:testpath];
+		}
+    
+    		// second try -2436h@3x iPhone X specific
+    		testpath = [NSString stringWithFormat:@"%@-2436h@3x.%@", partial, ext];
+    		if ([fm fileExistsAtPath:testpath]) {
+    			return [NSURL fileURLWithPath:testpath];
+   		}
+
+    		// third try plain @3x
+		testpath = [NSString stringWithFormat:@"%@@3x.%@",partial,ext];
+		if ([fm fileExistsAtPath:testpath]) {
+			return [NSURL fileURLWithPath:testpath];
+		}
+	}
+	if([TiUtils isRetinaDisplay]){
+		if ([TiUtils isRetinaiPhone6]) {
+			// first try -667h@2x iphone6 specific
+			NSString *testpath = [NSString stringWithFormat:@"%@-667h@2x.%@",partial,ext];
+			if ([fm fileExistsAtPath:testpath]) {
+				return [NSURL fileURLWithPath:testpath];
+			}
+		} else if ([TiUtils isRetinaFourInch]) {
+			// first try -568h@2x iphone5 specific
+			NSString *testpath = [NSString stringWithFormat:@"%@-568h@2x.%@",partial,ext];
+			if ([fm fileExistsAtPath:testpath]) {
+				return [NSURL fileURLWithPath:testpath];
+			}
+		}
+		// first try 2x device specific
+		NSString *testpath = [NSString stringWithFormat:@"%@@2x%@.%@",partial,os,ext];
+		if ([fm fileExistsAtPath:testpath])
+		{
+			return [NSURL fileURLWithPath:testpath];
+		}
+		// second try plain 2x
+		testpath = [NSString stringWithFormat:@"%@@2x.%@",partial,ext];
+		if ([fm fileExistsAtPath:testpath])
+		{
+			return [NSURL fileURLWithPath:testpath];
+		}
+	}
+	// third try just device specific normal res
+	NSString *testpath = [NSString stringWithFormat:@"%@%@.%@",partial,os,ext];
+	if ([fm fileExistsAtPath:testpath])
+	{
+		return [NSURL fileURLWithPath:testpath];
+	}
+
+	return url;
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 const CFStringRef charactersThatNeedEscaping = NULL;

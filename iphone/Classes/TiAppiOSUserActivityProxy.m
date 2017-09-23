@@ -52,6 +52,7 @@
 
 - (id)isSupported:(id)unused
 {
+<<<<<<< HEAD
   return NUMBOOL(_supported);
 }
 
@@ -71,6 +72,26 @@
   DebugLog(@"[ERROR] activityType property is required on creation");
 
   return NO;
+=======
+    return NUMBOOL(_supported);
+}
+
+-(BOOL) determineMinRequirements:(NSDictionary *)props
+{
+    _isValid = NO;
+    if ([props objectForKey:@"activityType"]) {
+        if (![self activityTypeValid:[TiUtils stringValue:@"activityType" properties:props]]) {
+            DebugLog(@"[ERROR] activityType provided is not defined in your projects tiapp.xml file");
+            return NO;
+        } else {
+            _isValid = YES;
+            return YES;
+        }
+    } else {
+        DebugLog(@"[ERROR] activityType property is required on creation");
+        return NO;
+    }
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 - (void)buildInitialActivity:(NSDictionary *)props

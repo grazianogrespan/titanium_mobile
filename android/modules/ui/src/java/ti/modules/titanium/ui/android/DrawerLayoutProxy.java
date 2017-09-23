@@ -27,7 +27,10 @@ public class DrawerLayoutProxy extends TiViewProxy
     @Kroll.constant public static final int LOCK_MODE_LOCKED_CLOSED = DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
     @Kroll.constant public static final int LOCK_MODE_LOCKED_OPEN = DrawerLayout.LOCK_MODE_LOCKED_OPEN;
     @Kroll.constant public static final int LOCK_MODE_UNLOCKED = DrawerLayout.LOCK_MODE_UNLOCKED;
+<<<<<<< HEAD
     @Kroll.constant public static final int LOCK_MODE_UNDEFINED = DrawerLayout.LOCK_MODE_UNDEFINED;
+=======
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 
     private static final String TAG = "DrawerLayoutProxy";
 
@@ -47,68 +50,108 @@ public class DrawerLayoutProxy extends TiViewProxy
 
     @Kroll.method(runOnUiThread=true)
     public void toggleLeft() {
+<<<<<<< HEAD
         if (drawer != null) {
             drawer.toggleLeft();
         }
+=======
+        drawer.toggleLeft();
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
     }
 
     @Kroll.method(runOnUiThread=true)
     public void openLeft() {
+<<<<<<< HEAD
         if (drawer != null) {
             drawer.openLeft();
         }
+=======
+        drawer.openLeft();
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
     }
 
     @Kroll.method(runOnUiThread=true)
     public void closeLeft() {
+<<<<<<< HEAD
         if (drawer != null) {
             drawer.closeLeft();
         }
+=======
+        drawer.closeLeft();
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
     }
 
     @Kroll.method(runOnUiThread=true)
     public void toggleRight() {
+<<<<<<< HEAD
         if (drawer != null) {
             drawer.toggleRight();
         }
+=======
+        drawer.toggleRight();
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
     }
 
     @Kroll.method(runOnUiThread=true)
     public void openRight() {
+<<<<<<< HEAD
         if (drawer != null) {
             drawer.openRight();
         }
+=======
+        drawer.openRight();
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
     }
 
     @Kroll.method(runOnUiThread=true)
     public void closeRight() {
+<<<<<<< HEAD
         if (drawer != null) {
             drawer.closeRight();
         }
+=======
+        drawer.closeRight();
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
     }
 
     @Kroll.method
     @Kroll.getProperty
     public boolean getIsLeftOpen() {
+<<<<<<< HEAD
         return drawer != null && drawer.isLeftOpen();
+=======
+        return drawer.isLeftOpen();
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
     }
 
     @Kroll.method
     @Kroll.getProperty
     public boolean getIsRightOpen() {
+<<<<<<< HEAD
         return drawer != null && drawer.isRightOpen();
+=======
+        return drawer.isRightOpen();
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
     }
 
     @Kroll.method
     @Kroll.getProperty
     public boolean getIsLeftVisible() {
+<<<<<<< HEAD
         return drawer != null && drawer.isLeftVisible();
+=======
+        return drawer.isLeftVisible();
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
     }
 
     @Kroll.method
     @Kroll.getProperty
     public boolean getIsRightVisible() {
+<<<<<<< HEAD
         return drawer != null && drawer.isRightVisible();
+=======
+        return drawer.isRightVisible();
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
     }
 
     @Kroll.method
@@ -142,6 +185,7 @@ public class DrawerLayoutProxy extends TiViewProxy
     }
 
     @Kroll.method
+<<<<<<< HEAD
     @Kroll.getProperty
     public boolean getDrawerIndicatorEnabled() {
         if (hasProperty(TiC.PROPERTY_DRAWER_INDICATOR_ENABLED)) {
@@ -151,12 +195,15 @@ public class DrawerLayoutProxy extends TiViewProxy
     }
 
     @Kroll.method
+=======
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
     @Kroll.setProperty
     public void setDrawerIndicatorEnabled(Object arg) {
         setPropertyAndFire(TiC.PROPERTY_DRAWER_INDICATOR_ENABLED, arg);
     }
 
     @Kroll.method
+<<<<<<< HEAD
     @Kroll.getProperty
     public int getDrawerLockMode() {
         if (hasProperty(TiC.PROPERTY_DRAWER_LOCK_MODE)) {
@@ -166,6 +213,8 @@ public class DrawerLayoutProxy extends TiViewProxy
     }
 
     @Kroll.method
+=======
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
     @Kroll.setProperty
     public void setDrawerLockMode(Object arg) {
         setPropertyAndFire(TiC.PROPERTY_DRAWER_LOCK_MODE, arg);
@@ -177,6 +226,7 @@ public class DrawerLayoutProxy extends TiViewProxy
     }
 
     @Kroll.method
+<<<<<<< HEAD
     @Kroll.getProperty
     public boolean getToolbarEnabled() {
         if (hasProperty(TiC.PROPERTY_TOOLBAR_ENABLED)) {
@@ -186,6 +236,8 @@ public class DrawerLayoutProxy extends TiViewProxy
     }
 
     @Kroll.method
+=======
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
     @Kroll.setProperty
     public void setToolbarEnabled(Object arg) {
         setPropertyAndFire(TiC.PROPERTY_TOOLBAR_ENABLED, arg);

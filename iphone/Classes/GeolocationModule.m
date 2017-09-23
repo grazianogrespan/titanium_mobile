@@ -159,6 +159,7 @@ extern BOOL const TI_APPLICATION_ANALYTICS;
 #pragma mark Internal
 
 // TODO: Do we need to force this onto the main thread?
+<<<<<<< HEAD
 - (void)shutdownLocationManager
 {
   [lock lock];
@@ -311,6 +312,175 @@ extern BOOL const TI_APPLICATION_ANALYTICS;
   }
   [lock unlock];
   return locationManager;
+=======
+-(void)shutdownLocationManager
+{
+	[lock lock];
+	if (locationManager == nil) {
+		[lock unlock];
+		return;
+	}
+	
+	if (trackingHeading) {
+		[locationManager stopUpdatingHeading];
+	}
+    
+	if (trackingLocation) {
+        if (trackSignificantLocationChange) {
+            [locationManager stopMonitoringSignificantLocationChanges];
+        }
+        else{
+            [locationManager stopUpdatingLocation];
+        }
+	}
+	RELEASE_TO_NIL_AUTORELEASE(locationManager);
+	[lock unlock];
+}
+
+-(void)_destroy
+{
+	[self shutdownLocationManager];
+	RELEASE_TO_NIL(tempManager);
+	RELEASE_TO_NIL(locationPermissionManager);
+	RELEASE_TO_NIL(iOS7PermissionManager);
+	RELEASE_TO_NIL(singleHeading);
+	RELEASE_TO_NIL(singleLocation);
+	RELEASE_TO_NIL(purpose);
+	RELEASE_TO_NIL(lock);
+	RELEASE_TO_NIL(lastLocationDict);
+	[super _destroy];
+}
+
+-(NSString*)apiName
+{
+    return @"Ti.Geolocation";
+}
+
+-(void)contextWasShutdown:(KrollBridge*)bridge
+{
+	if (singleHeading!=nil)
+	{
+		for (KrollCallback *callback in [NSArray arrayWithArray:singleHeading])
+		{
+			KrollContext *ctx = (KrollContext*)[callback context];
+			if ([bridge krollContext] == ctx)
+			{
+				[singleHeading removeObject:callback];
+			}
+		}
+		if ([singleHeading count]==0)
+		{
+			RELEASE_TO_NIL(singleHeading);
+			[locationManager stopUpdatingHeading];
+		}
+	}
+	if (singleLocation!=nil)
+	{
+		for (KrollCallback *callback in [NSArray arrayWithArray:singleLocation])
+		{
+			KrollContext *ctx = (KrollContext*)[callback context];
+			if ([bridge krollContext] == ctx)
+			{
+				[singleLocation removeObject:callback];
+			}
+		}
+		if ([singleLocation count]==0)
+		{
+			RELEASE_TO_NIL(singleLocation);
+			[locationManager stopUpdatingLocation];
+		}
+	}
+}
+
+-(void)_configure
+{
+	// reasonable defaults:
+	
+	// accuracy by default
+	accuracy = kCLLocationAccuracyThreeKilometers;
+	
+	// distance filter by default is notify of all movements
+	distance = kCLDistanceFilterNone;
+	
+	// minimum heading filter by default
+	heading = kCLHeadingFilterNone;
+	
+	// should we show heading calibration dialog? defaults to YES
+	calibration = YES;
+    
+    // track all location changes by default 
+	trackSignificantLocationChange = NO;
+
+	// activity Type by default
+	activityType = CLActivityTypeOther;
+
+	// pauseLocationupdateAutomatically by default NO
+	pauseLocationUpdateAutomatically  = NO;
+
+	//Set the default based on if the user has defined a background location mode
+	NSArray* backgroundModes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIBackgroundModes"];
+	allowsBackgroundLocationUpdates = ([backgroundModes containsObject:@"location"]);
+
+	lock = [[NSRecursiveLock alloc] init];
+	
+	[super _configure]; 
+}
+
+-(CLLocationManager*)locationManager
+{
+	[lock lock];
+	if (locationManager==nil)
+	{
+		RELEASE_TO_NIL(tempManager);
+		locationManager = [[CLLocationManager alloc] init];
+		locationManager.delegate = self;
+		if (!trackSignificantLocationChange) {
+            if (accuracy!=-1)
+            {
+                locationManager.desiredAccuracy = accuracy;
+            }
+            else
+            {
+                locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
+            }
+            locationManager.distanceFilter = distance;
+        }
+		locationManager.headingFilter = heading;
+
+        if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"]) {
+            [locationManager requestAlwaysAuthorization];
+        } else if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"]) {
+            [locationManager requestWhenInUseAuthorization];
+        } else {
+            NSLog(@"[ERROR] The keys NSLocationAlwaysUsageDescription or NSLocationWhenInUseUsageDescription are not defined in your tiapp.xml. Starting with iOS8 this is required.");
+        }
+
+        //This is set to NO by default for > iOS9.
+        if ([TiUtils isIOS9OrGreater]) {
+            locationManager.allowsBackgroundLocationUpdates = allowsBackgroundLocationUpdates;
+        }
+
+        locationManager.activityType = activityType;
+        locationManager.pausesLocationUpdatesAutomatically = pauseLocationUpdateAutomatically;
+            
+
+		if ([CLLocationManager locationServicesEnabled]== NO) 
+		{
+			//NOTE: this is from Apple example from LocateMe and it works well. the developer can still check for the
+			//property and do this message themselves before calling geo. But if they don't, we at least do it for them.
+			NSString *title = NSLocalizedString(@"Location Services Disabled",@"Location Services Disabled Alert Title");
+			NSString *msg = NSLocalizedString(@"You currently have all location services for this device disabled. If you proceed, you will be asked to confirm whether location services should be reenabled.",@"Location Services Disabled Alert Message");
+			NSString *ok = NSLocalizedString(@"OK",@"Location Services Disabled Alert OK Button");
+            
+            		UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
+            		UIAlertAction *action = [UIAlertAction actionWithTitle:ok style:UIAlertActionStyleCancel handler:nil];
+            		[alertController addAction:action];
+            		[[TiApp app] showModalController:alertController animated:YES];
+		}
+	}
+	[lock unlock];
+	return locationManager;
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 // this is useful for a few methods below that need to use an instance but we
@@ -741,12 +911,20 @@ MAKE_SYSTEM_PROP(ACTIVITYTYPE_OTHER_NAVIGATION, CLActivityTypeOtherNavigation);
 
 - (NSNumber *)AUTHORIZATION_ALWAYS
 {
+<<<<<<< HEAD
   return NUMINT(kCLAuthorizationStatusAuthorizedAlways);
+=======
+    return NUMINT(kCLAuthorizationStatusAuthorizedAlways);
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 - (NSNumber *)AUTHORIZATION_WHEN_IN_USE
 {
+<<<<<<< HEAD
   return NUMINT(kCLAuthorizationStatusAuthorizedWhenInUse);
+=======
+    return NUMINT(kCLAuthorizationStatusAuthorizedWhenInUse);
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 - (CLLocationManager *)locationPermissionManager
@@ -761,12 +939,21 @@ MAKE_SYSTEM_PROP(ACTIVITYTYPE_OTHER_NAVIGATION, CLActivityTypeOtherNavigation);
 
 - (NSNumber *)hasLocationPermissions:(id)args
 {
+<<<<<<< HEAD
   BOOL locationServicesEnabled = [CLLocationManager locationServicesEnabled];
   CLAuthorizationStatus currentPermissionLevel = [CLLocationManager authorizationStatus];
   id value = [args objectAtIndex:0];
   ENSURE_TYPE(value, NSNumber);
   CLAuthorizationStatus requestedPermissionLevel = [TiUtils intValue:value];
   return NUMBOOL(locationServicesEnabled && currentPermissionLevel == requestedPermissionLevel);
+=======
+    BOOL locationServicesEnabled = [CLLocationManager locationServicesEnabled];
+    CLAuthorizationStatus currentPermissionLevel = [CLLocationManager authorizationStatus];
+    id value = [args objectAtIndex:0];
+    ENSURE_TYPE(value, NSNumber);
+    CLAuthorizationStatus requestedPermissionLevel = [TiUtils intValue: value];
+    return NUMBOOL(locationServicesEnabled && currentPermissionLevel == requestedPermissionLevel);
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 - (void)requestAuthorization:(id)value
@@ -801,6 +988,7 @@ MAKE_SYSTEM_PROP(ACTIVITYTYPE_OTHER_NAVIGATION, CLActivityTypeOtherNavigation);
 
 - (void)requestLocationPermissions:(id)args
 {
+<<<<<<< HEAD
   id value = [args objectAtIndex:0];
   ENSURE_TYPE(value, NSNumber);
 
@@ -838,6 +1026,59 @@ MAKE_SYSTEM_PROP(ACTIVITYTYPE_OTHER_NAVIGATION, CLActivityTypeOtherNavigation);
       }
     } else {
       errorMessage = @"The NSLocationWhenInUseUsageDescription key must be defined in your tiapp.xml in order to request this permission";
+=======
+    id value = [args objectAtIndex:0];
+    ENSURE_TYPE(value, NSNumber);
+    
+    // Store the authorization callback for later usage
+    if([args count] == 2) {
+        RELEASE_TO_NIL(authorizationCallback);
+        ENSURE_TYPE([args objectAtIndex:1], KrollCallback);
+        authorizationCallback = [[args objectAtIndex:1] retain];
+    }
+    
+    CLAuthorizationStatus requested = [TiUtils intValue: value];
+    CLAuthorizationStatus currentPermissionLevel = [CLLocationManager authorizationStatus];
+    BOOL permissionsGranted = (currentPermissionLevel == kCLAuthorizationStatusAuthorizedAlways) || (currentPermissionLevel == kCLAuthorizationStatusAuthorizedWhenInUse);
+    
+    if (permissionsGranted) {
+        [self executeAndReleaseCallbackWithCode:0 andMessage:nil];
+        return;
+    } else if (currentPermissionLevel == kCLAuthorizationStatusDenied) {
+        NSString *message = @"The user denied access to use location services.";
+        [self executeAndReleaseCallbackWithCode:1 andMessage:message];
+        return;
+    }
+    
+    NSString *errorMessage = nil;
+    
+    if(requested == kCLAuthorizationStatusAuthorizedWhenInUse) {
+        if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"]) {
+            if ((currentPermissionLevel == kCLAuthorizationStatusAuthorizedAlways) ||
+               (currentPermissionLevel == kCLAuthorizationStatusAuthorized)) {
+                errorMessage = @"Cannot change already granted permission from AUTHORIZATION_ALWAYS to AUTHORIZATION_WHEN_IN_USE";
+            } else {
+                TiThreadPerformOnMainThread(^{
+                    [[self locationPermissionManager] requestWhenInUseAuthorization];
+                }, NO);
+            }
+        } else {
+            errorMessage = @"The NSLocationWhenInUseUsageDescription key must be defined in your tiapp.xml in order to request this permission";
+        }
+    }
+    if ((requested == kCLAuthorizationStatusAuthorizedAlways) || (requested == kCLAuthorizationStatusAuthorized)) {
+        if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"]) {
+            if (currentPermissionLevel == kCLAuthorizationStatusAuthorizedWhenInUse) {
+                errorMessage = @"Cannot change already granted permission from AUTHORIZATION_WHEN_IN_USE to AUTHORIZATION_ALWAYS";
+            } else {
+                TiThreadPerformOnMainThread(^{
+                    [[self locationPermissionManager] requestAlwaysAuthorization];
+                }, NO);
+            }
+        } else {
+            errorMessage = @"The NSLocationAlwaysUsageDescription key must be defined in your tiapp.xml in order to request this permission.";
+        }
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
     }
   }
   if (requested == kCLAuthorizationStatusAuthorizedAlways) {
@@ -945,6 +1186,7 @@ MAKE_SYSTEM_PROP(ACTIVITYTYPE_OTHER_NAVIGATION, CLActivityTypeOtherNavigation);
   return NO;
 }
 
+<<<<<<< HEAD
 - (BOOL)fireSingleShotHeadingIfNeeded:(NSDictionary *)event stopIfNeeded:(BOOL)stopIfNeeded
 {
   // check to see if we have any single shot heading callbacks
@@ -963,6 +1205,35 @@ MAKE_SYSTEM_PROP(ACTIVITYTYPE_OTHER_NAVIGATION, CLActivityTypeOtherNavigation);
     return YES;
   }
   return NO;
+=======
+-(NSDictionary*)locationDictionary:(CLLocation*)newLocation;
+{
+	if ([newLocation timestamp] == 0)
+	{
+		// this happens when the location object is essentially null (as in no location)
+		return nil;
+	}
+	
+	CLLocationCoordinate2D latlon = [newLocation coordinate];
+	
+	NSMutableDictionary * data = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+						   [NSNumber numberWithFloat:latlon.latitude],@"latitude",
+						   [NSNumber numberWithFloat:latlon.longitude],@"longitude",
+						   [NSNumber numberWithFloat:[newLocation altitude]],@"altitude",
+						   [NSNumber numberWithFloat:[newLocation horizontalAccuracy]],@"accuracy",
+						   [NSNumber numberWithFloat:[newLocation verticalAccuracy]],@"altitudeAccuracy",
+						   [NSNumber numberWithFloat:[newLocation course]],@"heading",
+						   [NSNumber numberWithFloat:[newLocation speed]],@"speed",
+						   [NSNumber numberWithLongLong:(long long)([[newLocation timestamp] timeIntervalSince1970] * 1000)],@"timestamp",
+						   nil];
+    
+    NSDictionary *floor = [NSDictionary dictionaryWithObjectsAndKeys:
+                           [NSNumber numberWithInteger:[[newLocation floor] level]],@"level",
+                           nil];
+    [data setObject:floor forKey:@"floor"];
+    
+	return data;
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 - (NSString *)purpose

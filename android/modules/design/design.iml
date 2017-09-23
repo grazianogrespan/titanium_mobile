@@ -14,7 +14,11 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+<<<<<<< HEAD
     <orderEntry type="module" module-name="appcompat" scope="RUNTIME" />
+=======
+    <orderEntry type="module" module-name="appcompat" />
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
     <orderEntry type="library" exported="" name="android-support-design" level="project" />
   </component>
 </module>

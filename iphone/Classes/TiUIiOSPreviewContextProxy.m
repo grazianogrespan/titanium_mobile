@@ -59,8 +59,14 @@
 
 - (void)connectToDelegate
 {
+<<<<<<< HEAD
   UIView *nativeSourceView = nil;
 
+=======
+#ifndef __clang_analyzer__
+    UIView *nativeSourceView = nil;
+    
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 #ifdef USE_TI_UILISTVIEW
   if ([[_sourceView view] isKindOfClass:[TiUIListView class]]) {
     nativeSourceView = [(TiUIListView *)[_sourceView view] tableView];
@@ -78,6 +84,7 @@
 #endif
 #endif
 #endif
+<<<<<<< HEAD
 
   if (nativeSourceView == nil) {
     nativeSourceView = [_sourceView view];
@@ -86,6 +93,17 @@
   UIViewController *controller = [[[TiApp app] controller] topPresentedController];
   [controller registerForPreviewingWithDelegate:[[TiPreviewingDelegate alloc] initWithPreviewContext:self]
                                      sourceView:nativeSourceView];
+=======
+    
+    if (nativeSourceView == nil) {
+        nativeSourceView = [_sourceView view];
+    }
+    
+    UIViewController *controller = [[[TiApp app] controller] topPresentedController];
+    [controller registerForPreviewingWithDelegate:[[TiPreviewingDelegate alloc] initWithPreviewContext:self]
+                                       sourceView:nativeSourceView];
+#endif
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 @end

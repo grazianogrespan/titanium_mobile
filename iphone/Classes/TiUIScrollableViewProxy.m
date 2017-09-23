@@ -328,13 +328,18 @@
   return result;
 }
 
+<<<<<<< HEAD
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+=======
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 {
   if ([self viewAttached]) {
     [(TiUIScrollableView *)[self view] manageRotation];
   }
 }
 
+<<<<<<< HEAD
 - (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(id<UIContentContainer>)container
 {
 }
@@ -348,6 +353,24 @@
 }
 
 - (void)willChangeLayout
+=======
+- (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(id <UIContentContainer>)container
+{
+    
+}
+
+- (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator
+{
+    
+}
+
+- (void)preferredContentSizeDidChangeForChildContentContainer:(id <UIContentContainer>)container
+{
+    
+}
+
+-(void)willChangeLayout
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 {
 #ifndef TI_USE_AUTOLAYOUT
   if (layoutProperties.layoutStyle != TiLayoutRuleAbsolute) {

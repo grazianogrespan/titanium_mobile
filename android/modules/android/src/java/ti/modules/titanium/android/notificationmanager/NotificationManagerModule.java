@@ -12,7 +12,10 @@ import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.titanium.TiC;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.kroll.KrollDict;
+<<<<<<< HEAD
 import org.appcelerator.kroll.common.Log;
+=======
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 
 import ti.modules.titanium.android.AndroidModule;
 
@@ -88,12 +91,17 @@ public class NotificationManagerModule extends KrollModule
 			int wakeFlags = TiConvert.toInt(wakeParams.get("flags"), (PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE));
 			PowerManager pm = (PowerManager) TiApplication.getInstance().getSystemService(TiApplication.getInstance().getApplicationContext().POWER_SERVICE);
 			if (pm != null && !pm.isScreenOn()) {
+<<<<<<< HEAD
 				try {
 					WakeLock wl = pm.newWakeLock(wakeFlags, "TiWakeLock");
 					wl.acquire(wakeTime);
 				} catch (IllegalArgumentException e) {
 					Log.e(TAG, e.getMessage());
 				}
+=======
+				WakeLock wl = pm.newWakeLock(wakeFlags, "TiWakeLock");
+				wl.acquire(wakeTime);
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 			}
 		}
 	}

@@ -28,6 +28,7 @@ TI_INLINE void waitForMemoryPanicCleared() //WARNING: This must never be run on 
  TiApp represents an instance of an application. There is always only one instance per application which could be accessed through <app> class method.
  @see app
  */
+<<<<<<< HEAD
 @interface TiApp : TiHost <UIApplicationDelegate, NSURLSessionDelegate, NSURLSessionTaskDelegate, NSURLSessionDownloadDelegate> {
   UIWindow *window;
   UIImageView *loadView;
@@ -36,11 +37,23 @@ TI_INLINE void waitForMemoryPanicCleared() //WARNING: This must never be run on 
 
   TiContextGroupRef contextGroup;
   KrollBridge *kjsBridge;
+=======
+@interface TiApp : TiHost <UIApplicationDelegate, NSURLSessionDelegate, NSURLSessionTaskDelegate, NSURLSessionDownloadDelegate>
+{
+	UIWindow *window;
+	UIImageView *loadView;
+	UIImageView *splashScreenImage;
+	BOOL loaded;
+
+	TiContextGroupRef contextGroup;
+	KrollBridge *kjsBridge;
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 
 #ifdef USE_TI_UIWEBVIEW
   XHRBridge *xhrBridge;
 #endif
 
+<<<<<<< HEAD
   NSMutableDictionary *launchOptions;
   NSTimeInterval started;
 
@@ -65,6 +78,32 @@ TI_INLINE void waitForMemoryPanicCleared() //WARNING: This must never be run on 
   NSMutableArray *runningServices;
   NSDictionary *localNotification;
   UIApplicationShortcutItem *launchedShortcutItem;
+=======
+	NSMutableDictionary *launchOptions;
+	NSTimeInterval started;
+
+	int32_t networkActivityCount;
+
+	TiRootViewController *controller;
+	NSString *userAgent;
+	NSString *remoteDeviceUUID;
+	
+	id remoteNotificationDelegate;
+	NSDictionary *remoteNotification;
+	NSMutableDictionary *pendingCompletionHandlers;
+	NSMutableDictionary *pendingReplyHandlers;
+	NSMutableDictionary *backgroundTransferCompletionHandlers;
+	NSMutableDictionary *queuedBootEvents;
+	BOOL appBooted;
+
+	NSString *sessionId;
+
+	UIBackgroundTaskIdentifier bgTask;
+	NSMutableArray *backgroundServices;
+	NSMutableArray *runningServices;
+	NSDictionary *localNotification;
+	UIApplicationShortcutItem *launchedShortcutItem;
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 }
 
 @property (nonatomic) BOOL forceSplashAsSnapshot;

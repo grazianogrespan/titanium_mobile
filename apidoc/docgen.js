@@ -992,7 +992,11 @@ formats.forEach(function (format) {
 			output += 'api_solr.json';
 	}
 
+<<<<<<< HEAD
 	if (!~[ 'addon' ].indexOf(format)) {
+=======
+	if (!~['addon'].indexOf(format)) {
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 		fs.writeFile(output, render, function (err) {
 			if (err) {
 				common.log(common.LOG_ERROR, 'Failed to write to file: %s with error: %s', output, err);

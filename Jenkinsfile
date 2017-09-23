@@ -10,9 +10,13 @@ def gitCommit = ''
 def basename = ''
 def vtag = ''
 def isPR = false
+<<<<<<< HEAD
 def MAINLINE_BRANCH_REGEXP = /master|\d_\d_(X|\d)/ // a branch is considered mainline if 'master' or like: 6_2_X, 7_0_X, 6_2_1
 def isMainlineBranch = true // used to determine if we should publish to S3 (and include branch in main listing)
 def isFirstBuildOnBranch = false // calculated by looking at S3's branches.json
+=======
+def isMainlineBranch = true
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 
 // Variables we can change
 def nodeVersion = '6.10.3' // NOTE that changing this requires we set up the desired version on jenkins master first!
@@ -117,7 +121,11 @@ timestamps {
 				// FIXME: Workaround for missing env.GIT_COMMIT: http://stackoverflow.com/questions/36304208/jenkins-workflow-checkout-accessing-branch-name-and-git-commit
 				gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
 				isPR = env.BRANCH_NAME.startsWith('PR-')
+<<<<<<< HEAD
 				isMainlineBranch = (env.BRANCH_NAME ==~ MAINLINE_BRANCH_REGEXP)
+=======
+				isMainlineBranch = (env.BRANCH_NAME ==~ /master|\d_\d_X/)
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 				// target branch of windows SDK to use and test suite to test with
 				if (isPR) {
 					targetBranch = env.CHANGE_TARGET
@@ -133,24 +141,40 @@ timestamps {
 
 				stage('Lint') {
 					// NPM 5.2.0 had a bug that broke pruning to production, but latest npm 5.4.1 works well
+<<<<<<< HEAD
 					sh "npm install -g npm@${npmVersion}"
+=======
+					sh 'npm install -g npm@5.4.1'
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 
 					// Install dependencies
 					timeout(5) {
 						// FIXME Do we need to do anything special to make sure we get os-specific modules only on that OS's build/zip?
 						sh 'npm install'
 					}
+<<<<<<< HEAD
 					// Stash files for danger.js later
 					if (isPR) {
 						stash includes: 'node_modules/,package.json,package-lock.json,dangerfile.js', name: 'danger'
 					}
 					sh 'npm test' // Run linting first // TODO Record the eslint output somewhere for danger to use later?
+=======
+					sh 'npm test' // Run linting first
+					// Then validate docs
+					dir('apidoc') {
+						sh 'node validate.js'
+					}
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 				}
 
 				// Skip the Windows SDK portion if a PR, we don't need it
 				stage('Windows') {
 					if (!isPR) {
 						// This may be the very first build on this branch, so there's no windows build to grab yet
+<<<<<<< HEAD
+=======
+						def isFirstBuildOnBranch = false
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 						try {
 							sh 'curl -O http://builds.appcelerator.com.s3.amazonaws.com/mobile/branches.json'
 							if (fileExists('branches.json')) {

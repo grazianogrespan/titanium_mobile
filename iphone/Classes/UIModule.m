@@ -255,6 +255,15 @@ MAKE_SYSTEM_PROP(LIST_ACCESSORY_TYPE_DISCLOSURE, UITableViewCellAccessoryDisclos
 
 #ifdef USE_TI_UITOOLBAR
 - (id)createToolbar:(id)args
+<<<<<<< HEAD
+=======
+{
+    return [[[TiUIToolbarProxy alloc] _initWithPageContext:[self executionContext] args:args apiName:@"Ti.UI.Toolbar"] autorelease];
+}
+#endif
+
+-(void)setOrientation:(id)mode
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 {
   return [[[TiUIToolbarProxy alloc] _initWithPageContext:[self executionContext] args:args apiName:@"Ti.UI.Toolbar"] autorelease];
 }

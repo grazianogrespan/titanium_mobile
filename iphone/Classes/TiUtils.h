@@ -610,6 +610,12 @@ typedef enum {
 + (BOOL)isIOS11OrGreater;
 
 /**
+ Whether or not the current OS version is equal to or greater than 11.0.
+ @return _YES_ if the current OS version is equal to or greater than 11.0, _NO_ otherwise.
+ */
++ (BOOL)isIOS11OrGreater;
+
+/**
  Whether or not the current OS version is equal to or greater than the specified version.
  @param version The version to compare.
  @return _YES_ if the current OS version is equal to or greater than the specified version, _NO_ otherwise.
@@ -639,6 +645,18 @@ typedef enum {
  @return _YES_ if the current device has a 4.7 inch retina display, _NO_ otherwise.
  */
 + (BOOL)isRetinaiPhone6;
+
+/**
+ Whether or not the current device has a 5.5 inch retina display (iPhone 6).
+ @return _YES_ if the current device has a 5.5 inch retina display, _NO_ otherwise.
+ */
++ (BOOL)isRetinaiPhone6Plus;
+
+/**
+ Whether or not the current device has a 5.8 inch retina display (iPhone X).
+ @return _YES_ if the current device has a 5.8 inch retina display, _NO_ otherwise.
+ */
++ (BOOL)isRetinaiPhoneX;
 
 /**
  Whether or not the current device has a 5.5 inch retina display (iPhone 6).

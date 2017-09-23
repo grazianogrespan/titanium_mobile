@@ -26,8 +26,13 @@
 @property (nonatomic, readwrite, assign) BOOL showsCancelButton;
 
 #pragma mark - Titanium Internal Use
+<<<<<<< HEAD
 - (void)ensureSearchBarHierarchy;
 - (void)setSearchBar:(UISearchBar *)searchBar;
+=======
+-(void)ensureSearchBarHierarchy;
+-(void)setSearchBar:(UISearchBar *)searchBar;
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 
 @end
 

@@ -43,7 +43,11 @@ const appc = require('node-appc'),
 	parallel = appc.async.parallel,
 	series = appc.async.series,
 	version = appc.version;
+<<<<<<< HEAD
 const platformsRegExp = new RegExp('^(' + ti.allPlatformNames.join('|') + '$)'); // eslint-disable-line security/detect-non-literal-regexp
+=======
+var platformsRegExp = /^(android|ios|iphone|ipad|mobileweb|blackberry|windows|tizen)$/;
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 const pemCertRegExp = /(^-----BEGIN CERTIFICATE-----)|(-----END CERTIFICATE-----.*$)|\n/g;
 
 function iOSBuilder() {
@@ -2426,7 +2430,11 @@ iOSBuilder.prototype.initialize = function initialize() {
 		this.defaultLaunchScreenStoryboard = false;
 	}
 
+<<<<<<< HEAD
 	const defaultColor = this.defaultLaunchScreenStoryboard ? 'ffffff' : null,
+=======
+	var defaultColor = this.defaultLaunchScreenStoryboard ? 'ffffff' : null,
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 		color = this.tiapp.ios['default-background-color'] || defaultColor;
 	if (color) {
 		const m = color.match(/^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/);
@@ -3370,7 +3378,11 @@ iOSBuilder.prototype.createXcodeProject = function createXcodeProject(next) {
 				}
 
 				if (this.provisioningProfile) {
+<<<<<<< HEAD
 					const ta = pbxProject.attributes.TargetAttributes[targetUuid] || (pbxProject.attributes.TargetAttributes[targetUuid] = {});
+=======
+					var ta = pbxProject.attributes.TargetAttributes[targetUuid] || (pbxProject.attributes.TargetAttributes[targetUuid] = {});
+>>>>>>> d66b03e449579adc243c52d3139083cf16a80604
 					ta.DevelopmentTeam = this.teamId;
 
 					Object.keys(caps).forEach(function (cap) {
