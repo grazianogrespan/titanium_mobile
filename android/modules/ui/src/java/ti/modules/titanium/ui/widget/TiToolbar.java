@@ -409,7 +409,7 @@ public class TiToolbar extends TiUIView implements Handler.Callback{
 	 * Sets them as current custom views.
 	 * @param value
 	 */
-	private void setViewProxiesArray(Object[] value) {
+	public void setViewProxiesArray(Object[] value) {
 		viewProxiesArray = new TiViewProxy[value.length];
 		for (int i=0; i < value.length; i++) {
 			viewProxiesArray[i] = (TiViewProxy) value[i];
