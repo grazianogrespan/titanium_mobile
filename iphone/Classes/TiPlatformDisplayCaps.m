@@ -49,14 +49,24 @@
 
 - (NSNumber *)platformWidth
 {
+<<<<<<< HEAD
   CGRect mainScreenBounds = [[UIScreen mainScreen] bounds];
   return [NSNumber numberWithFloat:mainScreenBounds.size.width];
+=======
+    CGRect mainScreenBounds = [[UIScreen mainScreen] bounds];
+    return [NSNumber numberWithFloat:mainScreenBounds.size.width];
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (NSNumber *)platformHeight
 {
+<<<<<<< HEAD
   CGRect mainScreenBounds = [[UIScreen mainScreen] bounds];
   return [NSNumber numberWithFloat:mainScreenBounds.size.height];
+=======
+    CGRect mainScreenBounds = [[UIScreen mainScreen] bounds];
+    return [NSNumber numberWithFloat:mainScreenBounds.size.height];
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (NSNumber *)logicalDensityFactor

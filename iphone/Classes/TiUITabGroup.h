@@ -29,10 +29,17 @@
 
 - (UITabBar *)tabbar;
 
+<<<<<<< HEAD
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator;
 - (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(id<UIContentContainer>)container;
 - (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator;
 - (void)preferredContentSizeDidChangeForChildContentContainer:(id<UIContentContainer>)container;
+=======
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator;
+- (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(id <UIContentContainer>)container;
+- (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator;
+- (void)preferredContentSizeDidChangeForChildContentContainer:(id <UIContentContainer>)container;
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 
 @end
 

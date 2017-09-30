@@ -40,6 +40,7 @@
 
 @end
 
+<<<<<<< HEAD
 @interface TiUITableView : TiUIView <UISearchResultsUpdating, UISearchControllerDelegate, UIScrollViewDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, TiScrolling, TiProxyObserver> {
   @private
   UITableView *tableview;
@@ -73,6 +74,41 @@
   TiViewProxy *headerViewProxy;
   TiViewProxy *footerViewProxy;
   BOOL viewWillDetach;
+=======
+@interface TiUITableView : TiUIView<UISearchResultsUpdating, UISearchControllerDelegate, UIScrollViewDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, TiScrolling, TiProxyObserver> {
+@private
+    UITableView *tableview;
+    UITableView *_searchTableView;
+    BOOL moving;
+    BOOL editing;
+    BOOL searchHidden;
+    BOOL hideOnSearch; // For backcompat, default 'true'
+    BOOL animateHide;
+    BOOL editable;
+    BOOL moveable;
+    NSMutableArray * sectionIndex;
+    NSMutableDictionary * sectionIndexMap;
+    TiDimension rowHeight;
+    TiDimension minRowHeight;
+    TiDimension maxRowHeight;
+    TiUISearchBarProxy * searchField;
+    UIView * tableHeaderView;
+    UIView * tableHeaderPullView;
+    UIButton * searchScreenView;
+    NSString * filterAttribute;
+    NSString * searchString;
+    NSMutableArray * searchResultIndexes;
+    BOOL searchActivated;
+    BOOL filterAnchored;
+    BOOL filterCaseInsensitive;
+    BOOL allowsSelectionSet;
+    UISearchController *searchController;
+    UITableViewController *resultViewController;
+    BOOL _dimsBackgroundDuringPresentation;
+    TiViewProxy* headerViewProxy;
+    TiViewProxy* footerViewProxy;
+    BOOL viewWillDetach;
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 #ifdef USE_TI_UIREFRESHCONTROL
   TiUIRefreshControlProxy *_refreshControlProxy;
 #endif

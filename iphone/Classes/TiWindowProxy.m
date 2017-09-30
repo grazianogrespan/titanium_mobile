@@ -462,6 +462,15 @@
   }
 }
 
+- (UIViewController *)windowHoldingController
+{
+    if (controller != nil) {
+        return controller;
+    } else {
+        return [[TiApp app] controller];
+    }
+}
+
 #pragma mark - Private Methods
 - (TiProxy *)tabGroup
 {
@@ -707,6 +716,7 @@
 
 - (void)setHidesBarsOnTap:(id)value
 {
+<<<<<<< HEAD
   ENSURE_TYPE(value, NSNumber);
   ENSURE_UI_THREAD(setHidesBarsOnTap, value);
 
@@ -715,10 +725,21 @@
   if ((controller != nil) && ([controller navigationController] != nil)) {
     [[controller navigationController] setHidesBarsOnTap:[TiUtils boolValue:value def:NO]];
   }
+=======
+    ENSURE_TYPE(value, NSNumber);
+    ENSURE_UI_THREAD(setHidesBarsOnSwipe, value);
+    
+    [self replaceValue:value forKey:@"hidesBarsOnSwipe" notification:NO];
+    
+    if ((controller != nil) && ([controller navigationController] != nil)) {
+        [[controller navigationController] setHidesBarsOnSwipe:[TiUtils boolValue:value def:NO]];
+    }
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (void)setHidesBarsWhenKeyboardAppears:(id)value
 {
+<<<<<<< HEAD
   ENSURE_TYPE(value, NSNumber);
   ENSURE_UI_THREAD(setHidesBarsWhenKeyboardAppears, value);
 
@@ -727,19 +748,40 @@
   if ((controller != nil) && ([controller navigationController] != nil)) {
     [[controller navigationController] setHidesBarsWhenKeyboardAppears:[TiUtils boolValue:value def:NO]];
   }
+=======
+    ENSURE_TYPE(value, NSNumber);
+    ENSURE_UI_THREAD(setHidesBarsOnTap, value);
+    
+    [self replaceValue:value forKey:@"hidesBarsOnTap" notification:NO];
+    
+    if ((controller != nil) && ([controller navigationController] != nil)) {
+        [[controller navigationController] setHidesBarsOnTap:[TiUtils boolValue:value def:NO]];
+    }
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
+<<<<<<< HEAD
   //For various views (scrollableView, NavGroup etc this info neeeds to be forwarded)
   NSArray *childProxies = [self children];
   for (TiViewProxy *thisProxy in childProxies) {
     if ([thisProxy respondsToSelector:@selector(viewWillTransitionToSize:withTransitionCoordinator:)]) {
       [(id)thisProxy viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+=======
+    ENSURE_TYPE(value, NSNumber);
+    ENSURE_UI_THREAD(setHidesBarsWhenKeyboardAppears, value);
+    
+    [self replaceValue:value forKey:@"hidesBarsWhenKeyboardAppears" notification:NO];
+    
+    if ((controller != nil) && ([controller navigationController] != nil)) {
+        [[controller navigationController] setHidesBarsWhenKeyboardAppears:[TiUtils boolValue:value def:NO]];
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
     }
   }
 }
 
+<<<<<<< HEAD
 - (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
   //For various views (scrollableView, NavGroup etc this info neeeds to be forwarded)
@@ -773,6 +815,52 @@
   }
 }
 
+=======
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator
+{
+    //For various views (scrollableView, NavGroup etc this info neeeds to be forwarded)
+    NSArray* childProxies = [self children];
+    for (TiViewProxy * thisProxy in childProxies) {
+        if ([thisProxy respondsToSelector:@selector(viewWillTransitionToSize:withTransitionCoordinator:)]) {
+            [(id)thisProxy viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+        }
+    }
+}
+
+- (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator
+{
+    //For various views (scrollableView, NavGroup etc this info neeeds to be forwarded)
+    NSArray* childProxies = [self children];
+    for (TiViewProxy * thisProxy in childProxies) {
+        if ([thisProxy respondsToSelector:@selector(willTransitionToTraitCollection:withTransitionCoordinator:)]) {
+            [(id)thisProxy willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
+        }
+    }
+}
+
+- (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(id <UIContentContainer>)container
+{
+    //For various views (scrollableView, NavGroup etc this info neeeds to be forwarded)
+    NSArray* childProxies = [self children];
+    for (TiViewProxy * thisProxy in childProxies) {
+        if ([thisProxy respondsToSelector:@selector(systemLayoutFittingSizeDidChangeForChildContentContainer:)]) {
+            [(id)thisProxy systemLayoutFittingSizeDidChangeForChildContentContainer:container];
+        }
+    }
+}
+
+- (void)preferredContentSizeDidChangeForChildContentContainer:(id <UIContentContainer>)container
+{
+    //For various views (scrollableView, NavGroup etc this info neeeds to be forwarded)
+    NSArray* childProxies = [self children];
+    for (TiViewProxy * thisProxy in childProxies) {
+        if ([thisProxy respondsToSelector:@selector(preferredContentSizeDidChangeForChildContentContainer:)]) {
+            [(id)thisProxy preferredContentSizeDidChangeForChildContentContainer:container];
+        }
+    }
+}
+
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 #pragma mark - TiAnimation Delegate Methods
 - (BOOL)animationShouldTransition:(TiAnimation *)sender
 {

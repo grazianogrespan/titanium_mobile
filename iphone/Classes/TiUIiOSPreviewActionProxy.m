@@ -34,6 +34,7 @@
 
 - (UIPreviewAction *)action
 {
+<<<<<<< HEAD
   if (action == nil) {
     action = [[UIPreviewAction actionWithTitle:_title
                                          style:_style
@@ -45,6 +46,17 @@
   }
 
   return action;
+=======
+    if (action == nil) {
+        action = [[UIPreviewAction actionWithTitle:_title style:_style handler:^void(UIPreviewAction *_action, UIViewController *_controller) {
+            if ([self _hasListeners:@"click"]) {
+                [self fireEventWithAction:_action];
+            }
+        }] retain];
+    }
+    
+    return action;
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (void)fireEventWithAction:(UIPreviewAction *)action

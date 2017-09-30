@@ -18,22 +18,36 @@
 #ifdef TI_USE_AUTOLAYOUT
 - (void)initializeTiLayoutView
 {
+<<<<<<< HEAD
   [super initializeTiLayoutView];
   toolBar = [self toolBar];
   [self setDefaultHeight:TiDimensionAutoSize];
   [self setDefaultWidth:TiDimensionAutoFill];
+=======
+    [super initializeTiLayoutView];
+    toolBar = [self toolBar];
+    [self setDefaultHeight:TiDimensionAutoSize];
+    [self setDefaultWidth:TiDimensionAutoFill];
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 #endif
 
 - (void)dealloc
 {
+<<<<<<< HEAD
   [self performSelector:@selector(setItems_:) withObject:nil];
   RELEASE_TO_NIL(toolBar);
   [super dealloc];
+=======
+    [self performSelector:@selector(setItems_:) withObject:nil];
+    RELEASE_TO_NIL(toolBar);
+    [super dealloc];
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (UIToolbar *)toolBar
 {
+<<<<<<< HEAD
   if (toolBar == nil) {
     toolBar = [[UIToolbar alloc] initWithFrame:[self bounds]];
     [toolBar setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin];
@@ -48,10 +62,27 @@
     [self setClipsToBounds:YES];
   }
   return toolBar;
+=======
+    if (toolBar == nil) {
+        toolBar = [[UIToolbar alloc] initWithFrame:[self bounds]];
+        [toolBar setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin];
+        [self addSubview:toolBar];
+        id extendVal = [[self proxy] valueForUndefinedKey:@"extendBackground"];
+        extendsBackground = [TiUtils boolValue:extendVal def:NO];
+        if (extendsBackground) {
+            [toolBar setDelegate:(id<UIToolbarDelegate>)self];
+            [self setClipsToBounds:NO];
+            return toolBar;
+        }
+        [self setClipsToBounds:YES];
+    }
+    return toolBar;
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (NSInteger)positionForBar:(id)bar
 {
+<<<<<<< HEAD
   if (extendsBackground) {
 #ifndef TI_USE_AUTOLAYOUT
 #if defined(DEBUG) || defined(DEVELOPER)
@@ -64,16 +95,35 @@
     return UIBarPositionTopAttached;
   }
   return UIBarPositionAny;
+=======
+    if (extendsBackground) {
+#ifndef TI_USE_AUTOLAYOUT
+#if defined(DEBUG) || defined(DEVELOPER)
+        TiDimension myTop = ((TiViewProxy *)[self proxy]).layoutProperties->top;
+        if (!TiDimensionEqual(myTop, TiDimensionMake(TiDimensionTypeDip, 20))) {
+            NSLog(@"extendBackground is true but top is not 20");
+        }
+#endif
+#endif
+        return UIBarPositionTopAttached;
+    }
+    return UIBarPositionAny;
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (id)accessibilityElement
 {
+<<<<<<< HEAD
   return [self toolBar];
+=======
+    return [self toolBar];
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 #ifndef TI_USE_AUTOLAYOUT
 - (void)layoutSubviews
 {
+<<<<<<< HEAD
   CGRect ourBounds = [self bounds];
   CGFloat height = ourBounds.size.height;
   if (height != [self verifyHeight:height]) {
@@ -86,11 +136,26 @@
   toolBounds.origin.x = 0.0;
   toolBounds.origin.y = hideTopBorder ? -1.0 : 0.0;
   [toolBar setFrame:toolBounds];
+=======
+    CGRect ourBounds = [self bounds];
+    CGFloat height = ourBounds.size.height;
+    if (height != [self verifyHeight:height]) {
+        [(TiViewProxy *)[self proxy] willChangeSize];
+        return;
+    }
+
+    CGRect toolBounds;
+    toolBounds.size = [[self toolBar] sizeThatFits:ourBounds.size];
+    toolBounds.origin.x = 0.0;
+    toolBounds.origin.y = hideTopBorder ? -1.0 : 0.0;
+    [toolBar setFrame:toolBounds];
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 #endif
 
 - (void)setItems_:(id)value
 {
+<<<<<<< HEAD
   ENSURE_TYPE_OR_NIL(value, NSArray);
   if (value != nil) {
     NSMutableArray *result = [NSMutableArray arrayWithCapacity:[value count]];
@@ -121,53 +186,121 @@
     }
     [toolbar setItems:nil];
   }
+=======
+    ENSURE_TYPE_OR_NIL(value, NSArray);
+    if (value != nil) {
+        NSMutableArray *result = [NSMutableArray arrayWithCapacity:[value count]];
+        Class proxyClass = [TiViewProxy class];
+        for (TiViewProxy *thisProxy in value) {
+            ENSURE_CLASS(thisProxy, proxyClass);
+            if (![thisProxy supportsNavBarPositioning]) {
+                //TODO: This is an exception that should have been raised long ago.
+                DebugLog(@"[ERROR] %@ does not support being in a toolbar!", thisProxy);
+                //continue;
+            }
+            if ([thisProxy conformsToProtocol:@protocol(TiToolbarButton)]) {
+                [(id<TiToolbarButton>)thisProxy setToolbar:(id<TiToolbar>)self.proxy];
+            }
+            [thisProxy windowWillOpen];
+            [result addObject:[thisProxy barButtonItem]];
+            [thisProxy windowDidOpen];
+        }
+        [[self toolBar] setItems:result];
+    } else {
+        UIToolbar *toolbar = [self toolBar];
+        if (toolbar != nil) {
+            for (id thisProxy in [toolbar items]) {
+                if ([thisProxy conformsToProtocol:@protocol(TiToolbarButton)]) {
+                    [(id<TiToolbarButton>)thisProxy setToolbar:nil];
+                }
+            }
+        }
+        [toolbar setItems:nil];
+    }
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (void)setBackgroundImage_:(id)arg
 {
+<<<<<<< HEAD
   UIImage *image = [self loadImage:arg];
   [[self toolBar] setBackgroundImage:image forToolbarPosition:(extendsBackground ? UIBarPositionTopAttached : UIBarPositionAny)barMetrics:UIBarMetricsDefault];
   self.backgroundImage = arg;
+=======
+    UIImage *image = [self loadImage:arg];
+    [[self toolBar] setBackgroundImage:image forToolbarPosition:(extendsBackground ? UIBarPositionTopAttached : UIBarPositionAny)barMetrics:UIBarMetricsDefault];
+    self.backgroundImage = arg;
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (void)setBarColor_:(id)value
 {
+<<<<<<< HEAD
   TiColor *newBarColor = [TiUtils colorValue:value];
 
   [[self toolBar] setBarStyle:[TiUtils barStyleForColor:newBarColor]];
   [toolBar setTranslucent:[TiUtils barTranslucencyForColor:newBarColor]];
   UIColor *barColor = [TiUtils barColorForColor:newBarColor];
   [toolBar setBarTintColor:barColor];
+=======
+    TiColor *newBarColor = [TiUtils colorValue:value];
+
+    [[self toolBar] setBarStyle:[TiUtils barStyleForColor:newBarColor]];
+    [toolBar setTranslucent:[TiUtils barTranslucencyForColor:newBarColor]];
+    UIColor *barColor = [TiUtils barColorForColor:newBarColor];
+    [toolBar setBarTintColor:barColor];
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (void)setTintColor_:(id)color
 {
+<<<<<<< HEAD
   TiColor *ticolor = [TiUtils colorValue:color];
   UIColor *theColor = [ticolor _color];
   [[self toolBar] setTintColor:theColor];
   [self setTintColor:theColor];
+=======
+    TiColor *ticolor = [TiUtils colorValue:color];
+    UIColor *theColor = [ticolor _color];
+    [[self toolBar] setTintColor:theColor];
+    [self setTintColor:theColor];
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (void)setTranslucent_:(id)value
 {
+<<<<<<< HEAD
   [toolBar setTranslucent:[TiUtils boolValue:value]];
+=======
+    [toolBar setTranslucent:[TiUtils boolValue:value]];
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 #ifndef TI_USE_AUTOLAYOUT
 - (void)frameSizeChanged:(CGRect)frame bounds:(CGRect)bounds
 {
+<<<<<<< HEAD
   [super frameSizeChanged:frame bounds:bounds];
   CGFloat height = bounds.size.height;
 
   if (height != [self verifyHeight:height]) {
     [(TiViewProxy *)[self proxy] willChangeSize];
   }
+=======
+    [super frameSizeChanged:frame bounds:bounds];
+    CGFloat height = bounds.size.height;
+
+    if (height != [self verifyHeight:height]) {
+        [(TiViewProxy *)[self proxy] willChangeSize];
+    }
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 #endif
 
 - (CGFloat)verifyHeight:(CGFloat)suggestedHeight
 {
+<<<<<<< HEAD
   CGFloat result = [[self toolBar] sizeThatFits:CGSizeZero].height;
   if (hideTopBorder) {
     result -= 1.0;
@@ -176,6 +309,16 @@
     result += 1.0;
   }
   return result;
+=======
+    CGFloat result = [[self toolBar] sizeThatFits:CGSizeZero].height;
+    if (hideTopBorder) {
+        result -= 1.0;
+    }
+    if (showBottomBorder) {
+        result += 1.0;
+    }
+    return result;
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 @end

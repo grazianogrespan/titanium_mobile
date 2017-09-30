@@ -77,7 +77,17 @@
   [(TiUISearchBar *)[self view] setSearchBar:searchBar];
 }
 
+<<<<<<< HEAD
 - (void)ensureSearchBarHierarchy
+=======
+-(void)setSearchBar:(UISearchBar *)searchBar
+{
+    // In UISearchController searchbar is readonly. We have to replace that search bar with existing search bar of proxy.
+    [(TiUISearchBar*)[self view] setSearchBar:searchBar];
+}
+
+-(void)ensureSearchBarHierarchy
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 {
   WARN_IF_BACKGROUND_THREAD;
   if ([self viewAttached]) {

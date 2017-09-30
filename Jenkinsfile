@@ -130,6 +130,13 @@ timestamps {
 						sh 'npm install'
 					}
 					sh 'npm test' // Run linting first
+<<<<<<< HEAD
+=======
+					// Then validate docs
+					dir('apidoc') {
+						sh 'node validate.js'
+					}
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 				}
 
 				// Skip the Windows SDK portion if a PR, we don't need it

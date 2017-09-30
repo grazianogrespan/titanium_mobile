@@ -1043,7 +1043,10 @@ AndroidBuilder.prototype.validate = function validate(logger, config, cli) {
 		process.exit(1);
 	}
 
+<<<<<<< HEAD
 	let tiappAndroidManifest;
+=======
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 	try {
 		tiappAndroidManifest = this.tiappAndroidManifest = cli.tiapp.android && cli.tiapp.android.manifest && (new AndroidManifest()).parse(cli.tiapp.android.manifest);
 	} catch (ex) {
@@ -2828,7 +2831,11 @@ AndroidBuilder.prototype.getNativeModuleBindings = function getNativeModuleBindi
 };
 
 AndroidBuilder.prototype.processTiSymbols = function processTiSymbols(next) {
+<<<<<<< HEAD
 	const depMap = JSON.parse(fs.readFileSync(path.join(this.platformPath, 'dependency.json'))),
+=======
+	var depMap = this.dependencyMap,
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 		modulesMap = JSON.parse(fs.readFileSync(path.join(this.platformPath, 'modules.json'))),
 		modulesPath = path.join(this.platformPath, 'modules'),
 		moduleBindings = {},
@@ -2889,8 +2896,15 @@ AndroidBuilder.prototype.processTiSymbols = function processTiSymbols(next) {
 
 		let jar = moduleJarMap[namespace];
 		if (jar) {
+<<<<<<< HEAD
 			jar = jar === 'titanium.jar' ? path.join(this.platformPath, jar) : path.join(this.platformPath, 'modules', jar);
 			if (fs.existsSync(jar) && !jarLibraries[jar]) {
+=======
+			jar = jar == 'titanium.jar' ? path.join(this.platformPath, jar) : path.join(this.platformPath, 'modules', jar);
+			if (this.isExternalAndroidLibraryAvailable(jar)) {
+				this.logger.debug('Excluding library ' + jar.cyan);
+			} else if (fs.existsSync(jar) && !jarLibraries[jar]) {
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 				this.logger.debug(__('Adding library %s', jar.cyan));
 				jarLibraries[jar] = 1;
 			}
@@ -2899,7 +2913,13 @@ AndroidBuilder.prototype.processTiSymbols = function processTiSymbols(next) {
 		}
 
 		depMap.libraries[namespace] && depMap.libraries[namespace].forEach(function (jar) {
-			if (fs.existsSync(jar = path.join(this.platformPath, jar)) && !jarLibraries[jar]) {
+			jar = path.join(this.platformPath, jar)
+			if (this.isExternalAndroidLibraryAvailable(jar)) {
+				this.logger.debug('Excluding dependency library ' + jar.cyan);
+				return;
+			}
+
+			if (fs.existsSync(jar) && !jarLibraries[jar]) {
 				this.logger.debug(__('Adding dependency library %s', jar.cyan));
 				jarLibraries[jar] = 1;
 			}
@@ -3084,9 +3104,21 @@ AndroidBuilder.prototype.copyModuleResources = function copyModuleResources(next
 			const resFile = jarFile.replace(/\.jar$/, '.res.zip'),
 				resPkgFile = jarFile.replace(/\.jar$/, '.respackage');
 
+<<<<<<< HEAD
 			if (fs.existsSync(resPkgFile) && fs.existsSync(resFile)) {
 				this.resPackages[resFile] = fs.readFileSync(resPkgFile).toString().split('\n').shift().trim();
 			}
+=======
+				if (fs.existsSync(resPkgFile) && fs.existsSync(resFile)) {
+					var packageName = fs.readFileSync(resPkgFile).toString().split(/\r?\n/).shift().trim();
+					if (!this.hasAndroidLibrary(packageName)) {
+						this.resPackages[resFile] = packageName;
+					} else {
+						this.logger.info(__('Excluding core module resources of %s (%s) because Android Library with same package name is available.', jarFile, packageName));
+						return done();
+					}
+				}
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 
 			if (!fs.existsSync(jarFile) || !fs.existsSync(resFile)) {
 				return done();
@@ -3265,7 +3297,11 @@ AndroidBuilder.prototype.generateAidl = function generateAidl(next) {
 
 			aidlHook(
 				this.androidInfo.sdk.executables.aidl,
+<<<<<<< HEAD
 				[ '-p' + this.androidCompileSDK.aidl, '-I' + this.buildSrcDir, '-o' + this.buildGenAppIdDir, file ],
+=======
+				['-p' + this.androidCompileSDK.aidl, '-I' + this.buildSrcDir, '-o' + this.buildGenAppIdDir, file],
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 				{},
 				callback
 			);
@@ -3825,7 +3861,11 @@ AndroidBuilder.prototype.compileJavaClasses = function compileJavaClasses(next) 
 		jarNames = {};
 
 	classpath[this.androidCompileSDK.androidJar] = 1;
+<<<<<<< HEAD
 	Object.keys(this.jarLibraries).forEach(function (jarFile) {
+=======
+	Object.keys(this.jarLibraries).map(function (jarFile) {
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 		classpath[jarFile] = 1;
 	});
 
@@ -4156,7 +4196,11 @@ AndroidBuilder.prototype.createUnsignedApk = function createUnsignedApk(next) {
 						return;
 					}
 
+<<<<<<< HEAD
 					const store = this.uncompressedTypes.indexOf(entry.entryName.split('.').pop()) !== -1;
+=======
+					var store = this.uncompressedTypes.indexOf(entry.entryName.split('.').pop()) !== -1;
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 
 					this.logger.debug(store
 						? __('Adding %s', entry.entryName.cyan)

@@ -171,6 +171,7 @@
 
 - (void)loadView
 {
+<<<<<<< HEAD
   TiRootViewNeue *rootView = [[TiRootViewNeue alloc] initWithFrame:[TiUtils frameForController:self]];
   self.view = rootView;
   rootView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
@@ -197,6 +198,34 @@
   }
   [rootView becomeFirstResponder];
   [rootView release];
+=======
+    TiRootViewNeue *rootView = [[TiRootViewNeue alloc] initWithFrame:[TiUtils frameForController:self]];
+    self.view = rootView;
+    rootView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    [self updateBackground];
+    
+    UIView* theHost = nil;
+    
+    hostView = [[UIView alloc] initWithFrame:[rootView bounds]];
+    hostView.backgroundColor = [UIColor clearColor];
+    
+#ifdef LAUNCHSCREEN_STORYBOARD
+    storyboardView = [[UIView alloc] initWithFrame:[rootView bounds]];
+    [storyboardView addSubview:[[[UIStoryboard storyboardWithName:@"LaunchScreen" bundle:[NSBundle mainBundle]] instantiateInitialViewController] view]];
+    [hostView addSubview:storyboardView];
+#endif
+    
+    hostView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    [rootView addSubview:hostView];
+    theHost = hostView;
+    
+    if (defaultImageView != nil) {
+        [self rotateDefaultImageViewToOrientation:[[UIApplication sharedApplication] statusBarOrientation]];
+        [theHost addSubview:defaultImageView];
+    }
+    [rootView becomeFirstResponder];
+    [rootView release];
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 #pragma mark Remote Control Notifications
@@ -276,6 +305,7 @@
 #endif
 }
 
+<<<<<<< HEAD
 - (UIImage *)defaultImageForOrientation:(UIDeviceOrientation)orientation resultingOrientation:(UIDeviceOrientation *)imageOrientation idiom:(UIUserInterfaceIdiom *)imageIdiom
 {
   UIImage *image;
@@ -351,6 +381,108 @@
   UIUserInterfaceIdiom imageIdiom;
   UIUserInterfaceIdiom deviceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
   /*
+=======
+- (UIImage*)defaultImageForOrientation:(UIDeviceOrientation) orientation resultingOrientation:(UIDeviceOrientation *)imageOrientation idiom:(UIUserInterfaceIdiom*) imageIdiom
+{
+	UIImage* image;
+	
+	if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+	{
+		*imageOrientation = orientation;
+		*imageIdiom = UIUserInterfaceIdiomPad;
+		// Specific orientation check
+		switch (orientation) {
+            case UIDeviceOrientationPortrait:
+            case UIDeviceOrientationPortraitUpsideDown:
+                image = [UIImage imageNamed:@"LaunchImage-700-Portrait"];
+                break;
+            case UIDeviceOrientationLandscapeLeft:
+            case UIDeviceOrientationLandscapeRight:
+                image = [UIImage imageNamed:@"LaunchImage-700-Landscape"];
+                break;
+            default:
+                image = nil;
+        }
+        if (image != nil) {
+            return image;
+        }
+        
+        // Generic orientation check
+        if (UIDeviceOrientationIsPortrait(orientation)) {
+            image = [UIImage imageNamed:@"LaunchImage-700-Portrait"];
+        }
+        else if (UIDeviceOrientationIsLandscape(orientation)) {
+            image = [UIImage imageNamed:@"LaunchImage-700-Landscape"];
+        }
+        
+        if (image != nil) {
+            return image;
+        }
+    }
+    *imageOrientation = UIDeviceOrientationPortrait;
+    *imageIdiom = UIUserInterfaceIdiomPhone;
+    // Default
+    image = nil;
+  
+    // iPhone X
+    if ([TiUtils isRetinaiPhoneX]) {
+      if (UIDeviceOrientationIsPortrait(orientation)) {
+        // Portrait
+        image = [UIImage imageNamed:@"LaunchImage-1100-Portrait-2436h@3x"];
+      } else if (UIDeviceOrientationIsLandscape(orientation)) {
+        // Landscape
+        image = [UIImage imageNamed:@"LaunchImage-1100-2436h@3x"];
+      }
+      if (image != nil) {
+        *imageOrientation = orientation;
+        return image;
+      }
+    }
+  
+    // iPhone 6 Plus
+    if ([TiUtils isRetinaiPhone6Plus]) {
+        if (UIDeviceOrientationIsPortrait(orientation)) {
+            image = [UIImage imageNamed:@"LaunchImage-800-Portrait-736h@3x"];
+        } else if (UIDeviceOrientationIsLandscape(orientation)) {
+            image = [UIImage imageNamed:@"LaunchImage-800-Landscape-736h@3x"];
+        }
+        if (image != nil) {
+            *imageOrientation = orientation;
+            return image;
+        }
+    }
+
+    // iPhone 6
+    if ([TiUtils isRetinaiPhone6]) {
+        image = [UIImage imageNamed:@"LaunchImage-800-667h"];
+        if (image != nil) {
+            return image;
+        }
+    }
+  
+    // iPhone 5
+    if ([TiUtils isRetinaFourInch]) {
+        image = [UIImage imageNamed:@"LaunchImage-700-568h@2x"];
+        if (image != nil) {
+            return image;
+        }
+    }
+
+    // iPhone 4
+    return [UIImage imageNamed:@"LaunchImage-700@2x"];
+}
+
+-(void)rotateDefaultImageViewToOrientation: (UIInterfaceOrientation )newOrientation;
+{
+	if (defaultImageView == nil)
+	{
+		return;
+	}
+	UIDeviceOrientation imageOrientation;
+	UIUserInterfaceIdiom imageIdiom;
+	UIUserInterfaceIdiom deviceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
+    /*
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
      *	This code could stand for some refinement, but it is rarely called during
      *	an application's lifetime and is meant to recreate the quirks and edge cases
      *	that iOS uses during application startup, including Apple's own
@@ -762,11 +894,19 @@
 
 - (UIView *)hostingView
 {
+<<<<<<< HEAD
   if ([self canHostWindows] && [self isViewLoaded]) {
     return hostView;
   } else {
     return nil;
   }
+=======
+    if ([self canHostWindows] && [self isViewLoaded]) {
+        return hostView;
+    } else {
+        return nil;
+    }
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (void)willOpenWindow:(id<TiWindowProtocol>)theWindow
@@ -836,6 +976,7 @@
         return;
       }
     }
+<<<<<<< HEAD
   }
 
   if (topVC == self) {
@@ -925,6 +1066,68 @@
     }
     defaultOrientations = defaultFlags;
   }
+=======
+    
+    if ([topVC isKindOfClass:[UIAlertController class]]) {
+        if (((UIAlertController*)topVC).preferredStyle == UIAlertControllerStyleAlert ) {
+            trulyAnimated = NO;
+            if (![theController isKindOfClass:[TiErrorController class]]) {
+                DebugLog(@"[ERROR] UIAlertController is up and showing an alert. ABORTING showing of modal controller");
+                return;
+            }
+        }
+    }
+    
+    if (topVC == self) {
+        [[containedWindows lastObject] resignFocus];
+    } else if ([topVC respondsToSelector:@selector(proxy)]) {
+        id theProxy = [(id)topVC proxy];
+        if ([theProxy conformsToProtocol:@protocol(TiWindowProtocol)]) {
+            [(id<TiWindowProtocol>)theProxy resignFocus];
+        }
+    }
+    [self dismissKeyboard];
+    [topVC presentViewController:theController animated:trulyAnimated completion:nil];
+}
+
+-(void)hideControllerModal:(UIViewController*)theController animated:(BOOL)animated
+{
+    UIViewController* topVC = [self topPresentedController];
+    if (topVC != theController) {
+        DebugLog(@"[WARN] Dismissing a view controller when it is not the top presented view controller. Will probably crash now.");
+    }
+    BOOL trulyAnimated = animated;
+    UIViewController* presenter = [theController presentingViewController];
+    
+        if ([presenter isKindOfClass:[UIAlertController class]]) {
+            if (((UIAlertController*)presenter).preferredStyle == UIAlertControllerStyleAlert ) {
+                trulyAnimated = NO;
+            }
+        }
+    [presenter dismissViewControllerAnimated:trulyAnimated completion:^{
+        if (presenter == self) {
+            [self didCloseWindow:nil];
+        } else {
+            [self dismissKeyboard];
+
+            if ([presenter respondsToSelector:@selector(proxy)]) {
+                id theProxy = [(id)presenter proxy];
+                if ([theProxy conformsToProtocol:@protocol(TiWindowProtocol)]) {
+                    [(id<TiWindowProtocol>)theProxy gainFocus];
+                }
+            } else {
+                //This code block will only execute when errorController is presented on top of an alert
+                if ([presenter isKindOfClass:[UIAlertController class]] && (((UIAlertController*)presenter).preferredStyle == UIAlertControllerStyleAlert)) {
+                    UIViewController* alertPresenter = [presenter presentingViewController];
+                    [alertPresenter dismissViewControllerAnimated:NO completion:^{
+                        [alertPresenter presentViewController:presenter animated:NO completion:nil];
+                    }];
+                }
+            }
+        }
+    }];
+}
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 
   return defaultOrientations;
 }
@@ -942,11 +1145,38 @@
         presentedViewController = nil;
       }
     }
+<<<<<<< HEAD
     if (presentedViewController != nil) {
       topmostController = presentedViewController;
       presentedViewController = nil;
     } else {
       break;
+=======
+	
+	return defaultOrientations;
+}
+
+-(UIViewController*)topPresentedControllerCheckingPopover:(BOOL)checkPopover
+{
+    UIViewController* topmostController = self;
+    UIViewController* presentedViewController = nil;
+    while ( topmostController != nil ) {
+        presentedViewController = [topmostController presentedViewController];
+        if ((presentedViewController != nil) && checkPopover) {
+            if (presentedViewController.modalPresentationStyle == UIModalPresentationPopover) {
+                presentedViewController = nil;
+            } else if ([presentedViewController isKindOfClass:[UIAlertController class]]) {
+                presentedViewController = nil;
+            }
+        }
+        if (presentedViewController != nil) {
+            topmostController = presentedViewController;
+            presentedViewController = nil;
+        }
+        else {
+            break;
+        }
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
     }
   }
   return topmostController;
@@ -1064,9 +1294,15 @@
 
 - (void)viewDidLayoutSubviews
 {
+<<<<<<< HEAD
   if (curTransformAngle == 0 && forceLayout) {
     [[self hostingView] setFrame:self.view.bounds];
   }
+=======
+    if (curTransformAngle == 0 && forceLayout) {
+        [[self hostingView] setFrame:self.view.bounds];
+    }
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 #ifdef DEVELOPER
   CGRect bounds = [[self hostingView] bounds];
   NSLog(@"ROOT DID LAYOUT SUBVIEWS %.1f %.1f", bounds.size.width, bounds.size.height);
@@ -1114,6 +1350,7 @@
 
 - (void)incrementActiveAlertControllerCount
 {
+<<<<<<< HEAD
   ++activeAlertControllerCount;
 }
 - (void)decrementActiveAlertControllerCount
@@ -1130,6 +1367,26 @@
         id theProxy = [(id)topVC proxy];
         if ([theProxy conformsToProtocol:@protocol(TiWindowProtocol)]) {
           [(id<TiWindowProtocol>)theProxy gainFocus];
+=======
+    ++activeAlertControllerCount;
+}
+-(void)decrementActiveAlertControllerCount
+{
+    --activeAlertControllerCount;
+    if (activeAlertControllerCount == 0) {
+        UIViewController* topVC = [self topPresentedController];
+        if (topVC == self) {
+            [self didCloseWindow:nil];
+        } else {
+            [self dismissKeyboard];
+            
+            if ([topVC respondsToSelector:@selector(proxy)]) {
+                id theProxy = [(id)topVC proxy];
+                if ([theProxy conformsToProtocol:@protocol(TiWindowProtocol)]) {
+                    [(id<TiWindowProtocol>)theProxy gainFocus];
+                }
+            }
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
         }
       }
     }
@@ -1138,6 +1395,7 @@
 
 - (NSUInteger)supportedOrientationsForAppDelegate;
 {
+<<<<<<< HEAD
   if (forcingStatusBarOrientation) {
     return 0;
   }
@@ -1148,6 +1406,18 @@
 
   //Since this is used just for intersection, ok to return UIInterfaceOrientationMaskAll
   return 30; //UIInterfaceOrientationMaskAll
+=======
+    if (forcingStatusBarOrientation) {
+        return 0;
+    }
+    
+    if (activeAlertControllerCount > 0) {
+        return [self supportedInterfaceOrientations];
+    }
+    
+    //Since this is used just for intersection, ok to return UIInterfaceOrientationMaskAll
+    return 30;//UIInterfaceOrientationMaskAll
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
@@ -1221,9 +1491,14 @@
 #ifdef FORCE_WITH_MODAL
     [self forceRotateToOrientation:target];
 #else
+<<<<<<< HEAD
     [self rotateHostingViewToOrientation:target
                          fromOrientation:[[UIApplication sharedApplication] statusBarOrientation]];
     forcingRotation = NO;
+=======
+        [self rotateHostingViewToOrientation:target fromOrientation:[[UIApplication sharedApplication] statusBarOrientation]];
+        forcingRotation = NO;
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 #endif
   } else {
     [self resetTransformAndForceLayout:NO];
@@ -1354,6 +1629,7 @@
     [[UIApplication sharedApplication] setStatusBarOrientation:newOrientation animated:NO];
     forcingStatusBarOrientation = NO;
     */
+<<<<<<< HEAD
   curTransformAngle = offset % 360;
 
   switch (curTransformAngle) {
@@ -1374,6 +1650,29 @@
   }
   [hostView setTransform:transform];
   [hostView setFrame:self.view.bounds];
+=======
+    curTransformAngle = offset % 360;
+    
+    switch (curTransformAngle) {
+        case 90:
+        case -270:
+            transform = CGAffineTransformMakeRotation(M_PI_2);
+            break;
+        case -90:
+        case 270:
+            transform = CGAffineTransformMakeRotation(-M_PI_2);
+            break;
+        case 180:
+            transform = CGAffineTransformMakeRotation(M_PI);
+            break;
+        default:
+            transform = CGAffineTransformIdentity;
+            break;
+    }
+    [hostView setTransform:transform];
+    [hostView setFrame:self.view.bounds];
+    
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 #pragma mark - TiOrientationController
@@ -1470,11 +1769,26 @@
 }
 - (void)viewDidDisappear:(BOOL)animated
 {
+<<<<<<< HEAD
   isCurrentlyVisible = NO;
   for (id<TiWindowProtocol> thisWindow in containedWindows) {
     [thisWindow viewDidDisappear:animated];
   }
   [super viewDidDisappear:animated];
+=======
+    isCurrentlyVisible = YES;
+    [self.view becomeFirstResponder];
+    if ([containedWindows count] > 0) {
+        for (id<TiWindowProtocol> thisWindow in containedWindows) {
+            [thisWindow viewDidAppear:animated];
+        }
+        forcingRotation = NO;
+        [self performSelector:@selector(childOrientationControllerChangedFlags:) withObject:[containedWindows lastObject] afterDelay:[[UIApplication sharedApplication] statusBarOrientationAnimationDuration]];
+        
+        [[containedWindows lastObject] gainFocus];
+    }
+    [super viewDidAppear:animated];
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
@@ -1488,6 +1802,7 @@
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
 
+<<<<<<< HEAD
 - (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(id<UIContentContainer>)container
 {
   for (id<TiWindowProtocol> thisWindow in containedWindows) {
@@ -1510,16 +1825,62 @@
     [thisWindow preferredContentSizeDidChangeForChildContentContainer:container];
   }
   [super preferredContentSizeDidChangeForChildContentContainer:container];
+=======
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator
+{
+    for (id<TiWindowProtocol> thisWindow in containedWindows) {
+        [thisWindow viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    }
+    UIInterfaceOrientation interfaceOrientation = (UIInterfaceOrientation)[[UIDevice  currentDevice] orientation];
+    [self updateOrientationHistory:interfaceOrientation];
+    [self rotateDefaultImageViewToOrientation:interfaceOrientation];
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+}
+
+- (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(id <UIContentContainer>)container
+{
+    for (id<TiWindowProtocol> thisWindow in containedWindows) {
+        [thisWindow systemLayoutFittingSizeDidChangeForChildContentContainer:container];
+    }
+    [super systemLayoutFittingSizeDidChangeForChildContentContainer:container];
+}
+
+- (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator
+{
+    for (id<TiWindowProtocol> thisWindow in containedWindows) {
+        [thisWindow willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
+    }
+    [super willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
+}
+
+- (void)preferredContentSizeDidChangeForChildContentContainer:(id <UIContentContainer>)container
+{
+    for (id<TiWindowProtocol> thisWindow in containedWindows) {
+        [thisWindow preferredContentSizeDidChangeForChildContentContainer:container];
+    }
+    [super preferredContentSizeDidChangeForChildContentContainer:container];
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 #pragma mark - Status Bar Appearance
 - (BOOL)prefersStatusBarHidden
 {
+<<<<<<< HEAD
   BOOL oldStatus = statusBarIsHidden;
   if ([containedWindows count] > 0) {
     statusBarIsHidden = [[containedWindows lastObject] hidesStatusBar];
     if (curTransformAngle != 0) {
       statusBarIsHidden = YES;
+=======
+    BOOL oldStatus = statusBarIsHidden;
+    if ([containedWindows count] > 0) {
+        statusBarIsHidden = [[containedWindows lastObject] hidesStatusBar];
+        if (curTransformAngle != 0) {
+            statusBarIsHidden = YES;
+        }
+    } else {
+        statusBarIsHidden = oldStatus = statusBarInitiallyHidden;
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
     }
   } else {
     statusBarIsHidden = oldStatus = statusBarInitiallyHidden;

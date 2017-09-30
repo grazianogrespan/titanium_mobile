@@ -405,7 +405,11 @@ methods:
         type: Boolean
     platforms: [android, iphone, ipad]
     since:
+<<<<<<< HEAD
         android: "6.2.0"
+=======
+        android: "6.2.0" 
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
         iphone: "6.1.0"
         ipad: "6.1.0"
 
@@ -445,7 +449,11 @@ methods:
         for more information.
     platforms: [android, iphone, ipad]
     since:
+<<<<<<< HEAD
         android: "6.2.0"
+=======
+        android: "6.2.0" 
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
         iphone: "6.1.0"
         ipad: "6.1.0"
     parameters:
@@ -1334,14 +1342,24 @@ properties:
     summary: Constant for disabling repeat on video playback.
     type: Number
     permission: read-only
+<<<<<<< HEAD
     platforms: [android, iphone, ipad]
     since: {android: "6.2.0", iphone: "0.9.0", ipad: "0.9.0"}
+=======
+    platforms: [android, iphone, ipad, mobileweb]
+    since: {android: "6.2.0", iphone: "0.9.0", ipad: "0.9.0", mobileweb: "1.8"}
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
   - name: VIDEO_REPEAT_MODE_ONE
     summary: Constant for repeating one video (i.e., the one video will repeat constantly) during playback.
     type: Number
     permission: read-only
+<<<<<<< HEAD
     platforms: [android, iphone, ipad]
     since: {android: "6.2.0", iphone: "0.9.0", ipad: "0.9.0"}
+=======
+    platforms: [android, iphone, ipad, mobileweb]
+    since: {android: "6.2.0", iphone: "0.9.0", ipad: "0.9.0", mobileweb: "1.8"}
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
   - name: VIDEO_SCALING_ASPECT_FILL
     summary: Scale video to fill the screen, clipping edges if necessary.
     description: |

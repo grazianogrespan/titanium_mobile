@@ -67,6 +67,7 @@
       [self initProxy:detailProxy withWrapper:detailViewWrapper];
     }
 
+<<<<<<< HEAD
     CGSize screenSize = [[UIScreen mainScreen] bounds].size;
     if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
       screenSize = CGSizeMake(screenSize.height, screenSize.width);
@@ -92,6 +93,50 @@
         splitRatioLandscape = 0.5;
       }
       [self.proxy replaceValue:NUMFLOAT(splitRatioLandscape) forKey:@"landscapeSplit" notification:NO];
+=======
+-(void)initWrappers
+{
+    if (!viewsInitialized) {
+        masterViewWrapper = [[UIView alloc] initWithFrame:[self bounds]];
+        detailViewWrapper = [[UIView alloc] initWithFrame:[self bounds]];
+        [self addSubview:detailViewWrapper];
+        [self addSubview:masterViewWrapper];
+        [self setClipsToBounds:YES];
+        if (masterProxy != nil) {
+            [self initProxy:masterProxy withWrapper:masterViewWrapper];
+        }
+        if (detailProxy != nil) {
+            [self initProxy:detailProxy withWrapper:detailViewWrapper];
+        }
+        
+        CGSize screenSize = [[UIScreen mainScreen] bounds].size;
+        if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
+            screenSize = CGSizeMake(screenSize.height, screenSize.width);
+        }
+        
+        CGFloat masterWidth = screenSize.height - screenSize.width;
+        if(splitRatioPortrait == 0) {
+            splitRatioPortrait = masterWidth / screenSize.width;
+            if (splitRatioPortrait < 0.25) {
+                splitRatioPortrait = 0.25;
+            } else if (splitRatioPortrait > 0.5) {
+                splitRatioPortrait = 0.5;
+            }
+            [self.proxy replaceValue:NUMFLOAT(splitRatioPortrait) forKey:@"portraitSplit" notification:NO];
+        }
+        
+        if (splitRatioLandscape == 0) {
+            splitRatioLandscape = masterWidth / screenSize.height;
+            
+            if (splitRatioLandscape < 0.25) {
+                splitRatioLandscape = 0.25;
+            } else if (splitRatioLandscape > 0.5) {
+                splitRatioLandscape = 0.5;
+            }
+            [self.proxy replaceValue:NUMFLOAT(splitRatioLandscape) forKey:@"landscapeSplit" notification:NO];
+        }
+        viewsInitialized = YES;
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
     }
     viewsInitialized = YES;
   }

@@ -151,6 +151,7 @@ typedef void (^EKEventStoreRequestAccessCompletionHandler)(BOOL granted, NSError
 
 - (TiCalendarCalendar *)getCalendarById:(id)arg
 {
+<<<<<<< HEAD
   ENSURE_SINGLE_ARG(arg, NSString);
 
   if (![NSThread isMainThread]) {
@@ -176,6 +177,35 @@ typedef void (^EKEventStoreRequestAccessCompletionHandler)(BOOL granted, NSError
     if ([cal.calendarIdentifier isEqualToString:arg]) {
       calendar_ = cal;
       break;
+=======
+    ENSURE_SINGLE_ARG(arg, NSString);
+        
+    if (![NSThread isMainThread]) {
+        __block id result = nil;
+        TiThreadPerformOnMainThread(^{result = [[self getCalendarById:arg] retain];}, YES);
+        return [result autorelease];
+    }
+        
+    EKEventStore* ourStore = [self store];
+    if (ourStore  == NULL) {
+        DebugLog(@"Could not instantiate an event of the event store.");
+        return nil;
+    }
+    EKCalendar* calendar_ = NULL;
+    
+    //Instead of getting calendar by identifier, have to get all and check for match
+    //not optimal but best way to fix non existing shared calendar error
+    NSArray *allCalendars = [ourStore calendarsForEntityType:EKEntityTypeEvent];
+    for (EKCalendar *cal in allCalendars) {
+        if ([cal.calendarIdentifier isEqualToString:arg]) {
+            calendar_ = cal;
+            break;
+        }
+    }
+
+    if (calendar_ == NULL) {
+        return NULL;
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
     }
   }
 

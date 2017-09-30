@@ -15,14 +15,24 @@
                android:layout_height="wrap_content"
                android:layout_width="match_parent"
                android:minHeight="?attr/actionBarSize"
+<<<<<<< HEAD
                android:background="#222299"
                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                android:elevation="4dp"/>
+=======
+               android:background="?attr/colorPrimary"
+               app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+               android:fitsSystemWindows="true"/>
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 
            <org.appcelerator.titanium.view.TiCompositeLayout
                android:layout_below="@id/drawer_layout_toolbar"
                android:layout_width="match_parent"
                android:layout_height="match_parent"/>
      </RelativeLayout>
+<<<<<<< HEAD
 </android.support.v4.widget.DrawerLayout>
+=======
+</android.support.v4.widget.DrawerLayout>
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f

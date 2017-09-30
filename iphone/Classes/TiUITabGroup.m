@@ -415,13 +415,20 @@ DEFINE_EXCEPTIONS
 
 - (void)setActiveTabIconTint_:(id)value
 {
+<<<<<<< HEAD
   TiColor *color = [TiUtils colorValue:value];
   //A nil tintColor is fine, too.
   controller.tabBar.tintColor = color.color;
+=======
+	TiColor* color = [TiUtils colorValue:value];
+	//A nil tintColor is fine, too.
+    controller.tabBar.tintColor = color.color;
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 #pragma mark Public APIs
 
+<<<<<<< HEAD
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
   [controller viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
@@ -435,6 +442,26 @@ DEFINE_EXCEPTIONS
 - (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(id<UIContentContainer>)container
 {
   [controller systemLayoutFittingSizeDidChangeForChildContentContainer:container];
+=======
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator
+{
+    [controller viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+}
+
+- (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator
+{
+    [controller willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
+}
+
+- (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(id <UIContentContainer>)container
+{
+    [controller systemLayoutFittingSizeDidChangeForChildContentContainer:container];
+}
+
+- (void)preferredContentSizeDidChangeForChildContentContainer:(id <UIContentContainer>)container
+{
+    [controller preferredContentSizeDidChangeForChildContentContainer:container];
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (void)preferredContentSizeDidChangeForChildContentContainer:(id<UIContentContainer>)container

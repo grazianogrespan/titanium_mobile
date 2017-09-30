@@ -243,6 +243,7 @@ static NSArray *popoverSequence;
 
 - (void)hide:(id)args
 {
+<<<<<<< HEAD
   if (!popoverInitialized) {
     DebugLog(@"Popover is not showing. Ignoring call") return;
   }
@@ -252,6 +253,27 @@ static NSArray *popoverSequence;
   [closingCondition lock];
   isDismissing = YES;
   [closingCondition unlock];
+=======
+    if (!popoverInitialized) {
+        DebugLog(@"Popover is not showing. Ignoring call")
+        return;
+    }
+    
+	ENSURE_SINGLE_ARG_OR_NIL(args,NSDictionary);
+
+	[closingCondition lock];
+	isDismissing = YES;
+	[closingCondition unlock];
+
+	TiThreadPerformOnMainThread(^{
+        [contentViewProxy windowWillClose];
+        animated = [TiUtils boolValue:@"animated" properties:args def:NO];
+        [[self viewController] dismissViewControllerAnimated:animated completion:^{
+            [self cleanup];
+        }];
+    },NO);
+}
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 
   TiThreadPerformOnMainThread(^{
     [contentViewProxy windowWillClose];
@@ -268,6 +290,7 @@ static NSArray *popoverSequence;
 
 - (void)cleanup
 {
+<<<<<<< HEAD
   [popOverCondition lock];
   currentlyDisplaying = NO;
   if (currentPopover == self) {
@@ -277,6 +300,48 @@ static NSArray *popoverSequence;
   [popOverCondition unlock];
 
   if (!popoverInitialized) {
+=======
+    [popOverCondition lock];
+    currentlyDisplaying = NO;
+    if (currentPopover == self) {
+        currentPopover = nil;
+    }
+    [popOverCondition broadcast];
+    [popOverCondition unlock];
+
+    if (!popoverInitialized)
+    {
+        [closingCondition lock];
+        isDismissing = NO;
+        [closingCondition signal];
+        [closingCondition unlock];
+        
+        return;
+    }
+    [contentViewProxy setProxyObserver:nil];
+    [contentViewProxy windowWillClose];
+    
+    popoverInitialized = NO;
+    [self fireEvent:@"hide" withObject:nil]; //Checking for listeners are done by fireEvent anyways.
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
+    [contentViewProxy windowDidClose];
+    
+    if ([contentViewProxy isKindOfClass:[TiWindowProxy class]]) {
+        UIView *topWindowView = [[[TiApp app] controller] topWindowProxyView];
+        if ([topWindowView isKindOfClass:[TiUIView class]]) {
+            TiViewProxy *theProxy = (TiViewProxy *)[(TiUIView *)topWindowView proxy];
+            if ([theProxy conformsToProtocol:@protocol(TiWindowProtocol)]) {
+                [(id<TiWindowProtocol>)theProxy gainFocus];
+            }
+        }
+    }
+    
+    [self forgetSelf];
+    RELEASE_TO_NIL(viewController);
+    RELEASE_TO_NIL(popoverView);
+    RELEASE_TO_NIL_AUTORELEASE(popoverController);
+    [self performSelector:@selector(release) withObject:nil afterDelay:0.5];
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
     [closingCondition lock];
     isDismissing = NO;
     [closingCondition signal];
@@ -315,6 +380,7 @@ static NSArray *popoverSequence;
 
 - (void)initAndShowPopOver
 {
+<<<<<<< HEAD
   currentPopover = self;
   [contentViewProxy setProxyObserver:self];
   if ([contentViewProxy isKindOfClass:[TiWindowProxy class]]) {
@@ -335,6 +401,28 @@ static NSArray *popoverSequence;
     [self updatePopoverNow];
     [contentViewProxy windowDidOpen];
   }
+=======
+    currentPopover = self;
+    [contentViewProxy setProxyObserver:self];
+    if ([contentViewProxy isKindOfClass:[TiWindowProxy class]]) {
+        UIView* topWindowView = [[[TiApp app] controller] topWindowProxyView];
+        if ([topWindowView isKindOfClass:[TiUIView class]]) {
+            TiViewProxy* theProxy = (TiViewProxy*)[(TiUIView*)topWindowView proxy];
+            if ([theProxy conformsToProtocol:@protocol(TiWindowProtocol)]) {
+                [(id<TiWindowProtocol>)theProxy resignFocus];
+            }
+        }
+        [(TiWindowProxy*)contentViewProxy setIsManaged:YES];
+        [(TiWindowProxy*)contentViewProxy open:nil];
+        [(TiWindowProxy*) contentViewProxy gainFocus];
+        [self updatePopoverNow];
+    } else {
+        [contentViewProxy windowWillOpen];
+        [contentViewProxy reposition];
+        [self updatePopoverNow];
+        [contentViewProxy windowDidOpen];
+    }
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (void)updatePopover:(NSNotification *)notification;
@@ -349,6 +437,7 @@ static NSArray *popoverSequence;
 - (CGSize)contentSize
 {
 #ifndef TI_USE_AUTOLAYOUT
+<<<<<<< HEAD
   CGSize screenSize = [[UIScreen mainScreen] bounds].size;
   if (poWidth.type != TiDimensionTypeUndefined) {
     [contentViewProxy layoutProperties]->width.type = poWidth.type;
@@ -363,6 +452,22 @@ static NSArray *popoverSequence;
   }
 
   return SizeConstraintViewWithSizeAddingResizing([contentViewProxy layoutProperties], contentViewProxy, screenSize, NULL);
+=======
+    CGSize screenSize = [[UIScreen mainScreen] bounds].size;
+    if (poWidth.type != TiDimensionTypeUndefined) {
+        [contentViewProxy layoutProperties]->width.type = poWidth.type;
+        [contentViewProxy layoutProperties]->width.value = poWidth.value;
+        poWidth = TiDimensionUndefined;
+    }
+    
+    if (poHeight.type != TiDimensionTypeUndefined) {
+        [contentViewProxy layoutProperties]->height.type = poHeight.type;
+        [contentViewProxy layoutProperties]->height.value = poHeight.value;
+        poHeight = TiDimensionUndefined;
+    }
+    
+    return SizeConstraintViewWithSizeAddingResizing([contentViewProxy layoutProperties], contentViewProxy, screenSize , NULL);
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 #else
   return CGSizeZero;
 #endif
@@ -370,6 +475,7 @@ static NSArray *popoverSequence;
 
 - (void)updatePassThroughViews
 {
+<<<<<<< HEAD
   NSArray *theViewProxies = [self valueForKey:@"passthroughViews"];
   if (IS_NULL_OR_NIL(theViewProxies)) {
     return;
@@ -380,6 +486,18 @@ static NSArray *popoverSequence;
   }
 
   [[[self viewController] popoverPresentationController] setPassthroughViews:theViews];
+=======
+    NSArray* theViewProxies = [self valueForKey:@"passthroughViews"];
+    if (IS_NULL_OR_NIL(theViewProxies)) {
+        return;
+    }
+    NSMutableArray* theViews = [NSMutableArray arrayWithCapacity:[theViewProxies count]];
+    for (TiViewProxy* proxy in theViewProxies) {
+        [theViews addObject:[proxy view]];
+    }
+    
+    [[[self viewController] popoverPresentationController] setPassthroughViews:theViews];
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (void)updateContentSize
@@ -395,6 +513,7 @@ static NSArray *popoverSequence;
   [closingCondition lock];
   if (isDismissing) {
     [closingCondition unlock];
+<<<<<<< HEAD
     return;
   }
   [closingCondition unlock];
@@ -407,6 +526,17 @@ static NSArray *popoverSequence;
   [thePresentationController setBackgroundColor:[[TiColor colorNamed:[self valueForKey:@"backgroundColor"]] _color]];
 
   [[TiApp app] showModalController:theController animated:animated];
+=======
+    [self updateContentSize];
+    UIViewController *theController = [self viewController];
+    [theController setModalPresentationStyle:UIModalPresentationPopover];
+    UIPopoverPresentationController *thePresentationController = [theController popoverPresentationController];
+    thePresentationController.permittedArrowDirections = directions;
+    thePresentationController.delegate = self;
+    [thePresentationController setBackgroundColor:[[TiColor colorNamed:[self valueForKey:@"backgroundColor"]] _color]];
+    
+    [[TiApp app] showModalController:theController animated:animated];
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (UIViewController *)viewController
@@ -504,11 +634,19 @@ static NSArray *popoverSequence;
 
 - (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)thisPopoverController
 {
+<<<<<<< HEAD
   if (thisPopoverController.contentViewController.presentedViewController != nil) {
     return NO;
   }
   [contentViewProxy windowWillClose];
   return YES;
+=======
+    if (thisPopoverController.contentViewController.presentedViewController != nil) {
+        return NO;
+    }
+    [contentViewProxy windowWillClose];
+    return YES;
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)thisPopoverController

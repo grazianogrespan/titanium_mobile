@@ -1487,6 +1487,7 @@ properties:
   - name: dimBackgroundForSearch
     summary: A Boolean indicating whether the underlying content is dimmed during a search.
     description: |
+<<<<<<< HEAD
           If you do not want to show the dimmed background when clicking on the search bar,
           set this property `false` during creation.
     type: Boolean
@@ -1495,6 +1496,16 @@ properties:
     platforms: [iphone, ipad]
     availability: creation
 
+=======
+          If you do not want to show the dimmed background when clicking on the search bar, 
+          set this property `false` during creation. 
+    type: Boolean
+    default: true 
+    since: 6.2.0
+    platforms: [iphone, ipad]
+    availability: creation
+    
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
   - name: searchAsChild
     summary: Determines whether the [SearchBar](Titanium.UI.SearchBar) or [SearchView](Titanium.UI.Android.SearchView) appears as part of the TableView.
     description: Set to false if the search view will be displayed in the action bar.

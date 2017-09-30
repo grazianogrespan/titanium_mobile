@@ -229,6 +229,7 @@ static NSArray *tabGroupKeySequence;
   [super viewDidDisappear:animated];
 }
 
+<<<<<<< HEAD
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
   if ([self viewAttached]) {
@@ -248,6 +249,34 @@ static NSArray *tabGroupKeySequence;
   if ([self viewAttached]) {
     [(TiUITabGroup *)[self view] systemLayoutFittingSizeDidChangeForChildContentContainer:container];
   }
+=======
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator
+{
+    if ([self viewAttached]) {
+        [(TiUITabGroup *)[self view] viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    }
+}
+
+- (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator
+{
+    if ([self viewAttached]) {
+        [(TiUITabGroup *)[self view] willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
+    }
+}
+
+- (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(id <UIContentContainer>)container
+{
+    if ([self viewAttached]) {
+        [(TiUITabGroup *)[self view] systemLayoutFittingSizeDidChangeForChildContentContainer:container];
+    }
+}
+
+- (void)preferredContentSizeDidChangeForChildContentContainer:(id <UIContentContainer>)container
+{
+    if ([self viewAttached]) {
+        [(TiUITabGroup *)[self view] preferredContentSizeDidChangeForChildContentContainer:container];
+    }
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (void)preferredContentSizeDidChangeForChildContentContainer:(id<UIContentContainer>)container

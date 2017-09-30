@@ -39,6 +39,7 @@ extern NSString *TitaniumModuleRequireFormat;
   @private
   NSURL *currentURL;
 
+<<<<<<< HEAD
   KrollContext *context;
   NSDictionary *preload;
   NSMutableDictionary *modules;
@@ -52,6 +53,21 @@ extern NSString *TitaniumModuleRequireFormat;
   CFMutableDictionaryRef registeredProxies;
   NSCondition *shutdownCondition;
   OSSpinLock proxyLock;
+=======
+	KrollContext *context;
+	NSDictionary *preload;
+	NSMutableDictionary *modules;
+	NSMutableDictionary *pathCache;
+	TitaniumObject *titanium;
+	KrollObject* console;
+	BOOL shutdown;
+	BOOL evaluationError;
+	//NOTE: Do NOT treat registeredProxies like a mutableDictionary; mutable dictionaries copy keys,
+	//CFMutableDictionaryRefs only retain keys, which lets them work with proxies properly.
+	CFMutableDictionaryRef registeredProxies;
+	NSCondition *shutdownCondition;
+	OSSpinLock proxyLock;
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 - (void)boot:(id)callback url:(NSURL *)url_ preload:(NSDictionary *)preload_;
 - (void)evalJSWithoutResult:(NSString *)code;

@@ -273,6 +273,7 @@ Packager.prototype.package = function (next) {
 		// Now include all the pre-built node-ios-device bindings/binaries
 		function (cb) {
 			if (this.targetOS === 'osx') {
+<<<<<<< HEAD
 				let dir = path.join(this.zipSDKDir, 'node_modules', 'node-ios-device');
 
 				if (!fs.existsSync(dir)) {
@@ -281,6 +282,16 @@ Packager.prototype.package = function (next) {
 
 				if (!fs.existsSync(dir)) {
 					return cb(new Error('Unable to find node-ios-device module'));
+=======
+				var dir = path.join(this.zipSDKDir, 'node_modules', 'node-ios-device');
+
+				if (!fs.existsSync(dir)) {
+				    dir = path.join(this.zipSDKDir, 'node_modules', 'ioslib', 'node_modules', 'node-ios-device');
+				}
+
+				if (!fs.existsSync(dir)) {
+				    return cb(new Error('Unable to find node-ios-device module'));
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 				}
 
 				exec('node bin/download-all.js', { cwd: dir, stdio: 'inherit' }, cb);

@@ -142,6 +142,7 @@
 
 - (void)hide:(id)args
 {
+<<<<<<< HEAD
   if (!showDialog) {
     return;
   }
@@ -158,6 +159,22 @@
     }
   },
       NO);
+=======
+    if (!showDialog) {
+        return;
+    }
+	if (alertController == nil) {
+		return;
+	}
+
+    TiThreadPerformOnMainThread(^{
+        if (alertController != nil) {
+            [alertController dismissViewControllerAnimated:animated completion:^{
+                [self cleanup];
+            }];
+        }
+    }, NO);
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (void)suspended:(NSNotification *)note

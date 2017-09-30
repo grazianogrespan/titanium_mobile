@@ -38,6 +38,8 @@
 
 - (UIViewController *)windowHoldingController;
 
+- (UIViewController *)windowHoldingController;
+
 #ifdef USE_TI_UIIOSTRANSITIONANIMATION
 - (TiUIiOSTransitionAnimationProxy *)transitionAnimation;
 #endif

@@ -519,10 +519,15 @@ enum {
   }
 #endif
 
+<<<<<<< HEAD
 #define VAL_OR_NSNULL(foo) (((foo) != nil) ? ((id)foo) : [NSNull null])
 
 NSData *dataWithHexString(NSString *hexString);
 NSString *hexString(NSData *thedata);
+=======
+NSData * dataWithHexString (NSString * hexString);
+NSString * hexString (NSData * thedata);
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 
 typedef enum {
   TiNetworkConnectionStateNone = 0,

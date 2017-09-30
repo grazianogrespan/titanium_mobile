@@ -11,6 +11,7 @@
  The class representing a font.
  */
 @interface WebFont : NSObject {
+<<<<<<< HEAD
   NSString *family;
   CGFloat size;
   BOOL isSemiboldWeight;
@@ -25,6 +26,22 @@
   UIFont *font;
 
   NSString *textStyle;
+=======
+	NSString* family;
+	CGFloat size;
+	BOOL isSemiboldWeight;
+	BOOL isBoldWeight;
+	BOOL isThinWeight;
+	BOOL isLightWeight;
+	BOOL isUltraLightWeight;
+	BOOL isNormalWeight;
+	BOOL isItalicStyle;
+	BOOL isNormalStyle;
+  
+	UIFont *font;
+
+	NSString *textStyle;
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 /**
@@ -68,6 +85,21 @@
  Whether or not the font weight is ultra light.
  */
 @property (nonatomic) BOOL isUltraLightWeight;
+
+/**
+ Whether or not the font weight is thin.
+ */
+@property(nonatomic) BOOL isThinWeight;
+
+/**
+ Whether or not the font weight is light.
+ */
+@property(nonatomic) BOOL isLightWeight;
+
+/**
+ Whether or not the font weight is ultra light.
+ */
+@property(nonatomic) BOOL isUltraLightWeight;
 
 /**
  Whether or not the font style is italic.

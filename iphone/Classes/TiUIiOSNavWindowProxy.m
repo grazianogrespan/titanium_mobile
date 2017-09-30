@@ -396,6 +396,7 @@
   [super gainFocus];
 }
 
+<<<<<<< HEAD
 - (void)resignFocus
 {
   UIViewController *topVC = [navController topViewController];
@@ -430,6 +431,38 @@
     [navController willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
   }
   [super willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
+=======
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator
+{
+    if ([self viewAttached]) {
+        [navController viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    }
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+}
+
+- (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(id <UIContentContainer>)container
+{
+    if ([self viewAttached]) {
+        [navController systemLayoutFittingSizeDidChangeForChildContentContainer:container];
+    }
+    [super systemLayoutFittingSizeDidChangeForChildContentContainer:container];
+}
+
+- (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator
+{
+    if ([self viewAttached]) {
+        [navController willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
+    }
+    [super willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
+}
+
+- (void)preferredContentSizeDidChangeForChildContentContainer:(id <UIContentContainer>)container
+{
+    if ([self viewAttached]) {
+        [navController preferredContentSizeDidChangeForChildContentContainer:container];
+    }
+    [super preferredContentSizeDidChangeForChildContentContainer:container];
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
 }
 
 - (void)preferredContentSizeDidChangeForChildContentContainer:(id<UIContentContainer>)container

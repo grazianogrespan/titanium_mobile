@@ -1,10 +1,18 @@
 {
   "name": "titanium-mobile",
   "description": "Appcelerator Titanium Mobile",
+<<<<<<< HEAD
   "version": "7.0.0",
   "moduleApiVersion": {
     "iphone": "2",
     "android": "4",
+=======
+  "version": "6.3.0",
+  "moduleApiVersion": {
+    "iphone": "2",
+    "android": "3",
+    "mobileweb": "2",
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
     "windows": "3"
   },
   "keywords": [
@@ -34,12 +42,20 @@
     "fields": "0.1.24",
     "glob": "7.1.1",
     "humanize": "0.0.9",
+<<<<<<< HEAD
     "ioslib": "1.5.0",
+=======
+    "ioslib": "1.6.0",
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
     "lodash.defaultsdeep": "4.6.0",
     "markdown": "0.5.0",
     "moment": "2.18.1",
     "node-appc": "0.2.43",
+<<<<<<< HEAD
     "node-titanium-sdk": "0.4.3",
+=======
+    "node-titanium-sdk": "^0.4.3",
+>>>>>>> 8d03624a669338ceab837242c6fefd23c1b1380f
     "node-uuid": "1.4.8",
     "pngjs": "3.0.1",
     "request": "2.81.0",
